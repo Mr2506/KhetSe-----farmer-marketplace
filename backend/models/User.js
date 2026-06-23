@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema(
     role: {
       type: String,
       required: [true, 'Please select a role'],
-      enum: ['Buyer', 'Farmer'],
+      enum: ['Buyer', 'Farmer', 'Admin'], // <-- ADDED 'Admin' HERE!
     },
     cityArea: {
       type: String,

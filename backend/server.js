@@ -13,7 +13,11 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Marketplace API is running...');
 });
+
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/produce', require('./routes/produceRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
