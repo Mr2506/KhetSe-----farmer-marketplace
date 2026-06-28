@@ -4,10 +4,6 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 
-import { upsertListingAction } from "@/lib/actions";
-
-const EMOJI_OPTIONS = ["🍅", "🥬", "🥕", "🫑", "🌾", "🌶️", "🥔", "🥒"];
-
 export function ListingForm({
   initial,
 }: {
@@ -27,6 +23,8 @@ export function ListingForm({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false); // Track image upload status
+
   const [form, setForm] = useState<{
     cropName: string;
     category: string;
@@ -49,24 +47,99 @@ export function ListingForm({
       harvestDate: new Date().toISOString().slice(0, 10),
       isOrganic: false,
       fulfillment: "Both",
-      photos: ["🍅", "🥬"],
+      photos: [], // Start with an empty array for real photos
     },
   );
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setUploadingImages(true);
+    const newPhotoUrls: string[] = [];
+
+    try {
+      // Loop through each selected file and upload to backend one by one
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("image", file); // 'image' MUST match upload.single('image') in backend
+
+        // Send to your Node.js upload route
+        const res = await fetch("http://localhost:5000/api/upload", {
+          method: "POST",
+          body: formData, // Notice: No Content-Type header! Browser sets it automatically for FormData
+        });
+
+        const data = await res.json();
+        
+        if (res.ok) {
+          // Cloudinary successfully returned the URL!
+          newPhotoUrls.push(data.imageUrl);
+        } else {
+          toast.error(data.message || "Failed to upload an image");
+        }
+      }
+
+      // Add the new Cloudinary URLs to our form state
+      setForm(prev => ({ ...prev, photos: [...prev.photos, ...newPhotoUrls] }));
+      toast.success("Images uploaded successfully!");
+    } catch (error) {
+      toast.error("Error uploading images");
+      console.error(error);
+    } finally {
+      setUploadingImages(false);
+    }
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      await upsertListingAction({
-        id: initial?.id,
-        ...form,
+      if (form.photos.length === 0) {
+        throw new Error("Please upload at least one photo.");
+      }
+
+      const token = localStorage.getItem("khetse_token");
+      if (!token) throw new Error("You must be logged in to post a listing.");
+
+      const url = initial 
+        ? `http://localhost:5000/api/produce/${initial.id}` 
+        : `http://localhost:5000/api/produce`;
+      
+      const method = initial ? "PUT" : "POST";
+
+      // THE FIX: We match the frontend state exactly to the backend MongoDB Schema
+      const payload = {
+        name: form.cropName,
+        category: form.category,
+        description: form.description,
+        pricePerUnit: form.price,
+        mandiPrice: form.mandiPrice,
+        quantityAvailable: form.quantity,
+        harvestDate: form.harvestDate,
+        isOrganic: form.isOrganic,
         fulfillment: form.fulfillment,
+        photos: form.photos
+      };
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` 
+        },
+        body: JSON.stringify(payload) // We send the mapped payload here!
       });
-      toast.success(initial ? "Listing updated" : "Listing created");
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to save listing");
+
+      toast.success(initial ? "Listing updated successfully!" : "Listing created successfully!");
       router.push("/farmer/listings");
       router.refresh();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed");
+    } catch (err: any) {
+      toast.error(err instanceof Error ? err.message : "Failed to save to database");
     } finally {
       setLoading(false);
     }
@@ -132,30 +205,46 @@ export function ListingForm({
         </select>
       </label>
 
-      <fieldset>
-        <legend className="text-sm font-medium">Photos (min 2 — pick emoji placeholders)</legend>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {EMOJI_OPTIONS.map((emoji) => (
-            <button
-              key={emoji}
-              type="button"
-              onClick={() => {
-                const has = form.photos.includes(emoji);
-                setForm({
-                  ...form,
-                  photos: has ? form.photos.filter((p) => p !== emoji) : [...form.photos, emoji].slice(0, 4),
-                });
-              }}
-              className={`h-12 w-12 rounded-xl text-xl ${form.photos.includes(emoji) ? "ring-2 ring-emerald-500 bg-emerald-50" : "bg-zinc-100"}`}
-            >
-              {emoji}
-            </button>
-          ))}
-        </div>
-        <p className="mt-1 text-xs text-zinc-500">Selected: {form.photos.join(" ") || "none"}</p>
+      {}
+      <fieldset className="space-y-2 p-3 border border-dashed border-zinc-300 rounded-xl">
+        <legend className="text-sm font-medium px-1">Photos (Real Images)</legend>
+        
+        <input 
+          type="file" 
+          accept="image/jpeg, image/png, image/jpg, image/webp"
+          multiple
+          onChange={handleImageUpload}
+          disabled={uploadingImages}
+          className="w-full text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 disabled:opacity-50 cursor-pointer"
+        />
+        
+        {uploadingImages && (
+          <p className="text-sm text-emerald-600 font-medium animate-pulse">
+            Uploading images to Cloudinary...
+          </p>
+        )}
+        
+        {/* Render small preview boxes for uploaded images */}
+        {form.photos.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-2">
+            {form.photos.map((photoUrl, i) => (
+              <div key={i} className="relative h-16 w-16 rounded-xl overflow-hidden border border-zinc-200 shadow-sm">
+                <img src={photoUrl} alt="Preview" className="object-cover w-full h-full" />
+                <button 
+                  type="button"
+                  onClick={() => setForm({...form, photos: form.photos.filter((_, index) => index !== i)})}
+                  className="absolute top-1 right-1 h-5 w-5 flex items-center justify-center rounded-full bg-red-500/90 text-white text-[10px] font-bold hover:bg-red-600 transition"
+                  title="Remove image"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </fieldset>
 
-      <button type="submit" disabled={loading} className="h-12 w-full rounded-xl bg-emerald-600 text-sm font-semibold text-white">
+      <button type="submit" disabled={loading || uploadingImages} className="h-12 w-full rounded-xl bg-emerald-600 text-sm font-semibold text-white disabled:opacity-50">
         {loading ? "Saving…" : initial ? "Update listing" : "Publish listing"}
       </button>
     </form>

@@ -5,16 +5,15 @@ const produceSchema = mongoose.Schema(
     farmer: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User', // This magically links the crop to the specific farmer's profile in the database
+      ref: 'User',
     },
     name: {
       type: String,
-      required: [true, 'Please add a crop name (e.g., Tomatoes, Wheat)'],
+      required: [true, 'Please add a crop name'],
     },
     category: {
       type: String,
       required: [true, 'Please select a category'],
-      enum: ['Vegetables', 'Fruits', 'Grains', 'Spices', 'Other'],
     },
     quantityAvailable: {
       type: Number,
@@ -22,32 +21,41 @@ const produceSchema = mongoose.Schema(
     },
     unit: {
       type: String,
-      required: true,
-      enum: ['kg', 'tonnes', 'grams', 'liters'],
       default: 'kg',
     },
     pricePerUnit: {
       type: Number,
-      required: [true, 'Please add a price per unit in Rupees'],
+      required: [true, 'Please add your price'],
     },
+    
+    mandiPrice: {
+      type: Number,
+    },
+    harvestDate: {
+      type: Date,
+    },
+    isOrganic: {
+      type: Boolean,
+      default: false,
+    },
+    fulfillment: {
+      type: String,
+      default: 'Pickup & Delivery',
+    },
+    photos: [{
+      type: String, // This will store the emojis as an array of strings (e.g., ["🍅", "🥬"])
+    }],
     description: {
       type: String,
-      required: false, // Optional details about quality, organic status, etc.
     },
     isAvailable: {
       type: Boolean,
-      default: true, // Automatically set to true when they post it
-    },
-     // Add this right below the description field inside models/Produce.js
-    image: {
-      type: String,
-      required: false, // Optional, so the tomatoes you already posted don't cause errors!
+      default: true,
     }
   },
   {
-    timestamps: true, // Automatically tracks when the crop was posted
+    timestamps: true,
   }
- 
 );
 
 module.exports = mongoose.model('Produce', produceSchema);

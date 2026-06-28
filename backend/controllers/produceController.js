@@ -1,33 +1,32 @@
 const Produce = require('../models/Produce');
 
-// @desc    Get all available produce (For Buyers to see the market)
-// @route   GET /api/produce
 const getProduce = async (req, res) => {
   try {
-    // Find all available produce. 
-    // .populate() magically fetches the Farmer's Name and Village from the Users collection!
     const produce = await Produce.find({ isAvailable: true })
       .populate('farmer', 'firstName lastName farmVillageName district');
-    
     res.status(200).json(produce);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch produce', error: error.message });
   }
 };
 
-// @desc    Add new produce (For Farmers to post items)
-// @route   POST /api/produce
+const getFarmerProduce = async (req, res) => {
+  try {
+    const produce = await Produce.find({ farmer: req.user.id });
+    res.status(200).json(produce);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch your listings', error: error.message });
+  }
+};
+
 const addProduce = async (req, res) => {
   try {
-    // req.user comes from our "protect" Bouncer middleware.
-    // Let's make sure Buyers can't accidentally post crops!
     if (req.user.role !== 'Farmer') {
       return res.status(403).json({ message: 'Only registered Farmers can add produce.' });
     }
 
-    const { name, category, quantityAvailable, unit, pricePerUnit, description } = req.body;
+    const { name, category, quantityAvailable, unit, pricePerUnit, mandiPrice, harvestDate, isOrganic, fulfillment, photos, description } = req.body;
 
-    // Create the crop in the database, automatically linked to the logged-in farmer
     const produce = await Produce.create({
       farmer: req.user.id, 
       name,
@@ -35,6 +34,11 @@ const addProduce = async (req, res) => {
       quantityAvailable,
       unit,
       pricePerUnit,
+      mandiPrice,
+      harvestDate,
+      isOrganic,
+      fulfillment,
+      photos,
       description
     });
 
@@ -44,4 +48,56 @@ const addProduce = async (req, res) => {
   }
 };
 
-module.exports = { getProduce, addProduce };
+const updateProduce = async (req, res) => {
+  try {
+    const produce = await Produce.findById(req.params.id);
+    if (!produce) return res.status(404).json({ message: 'Produce not found' });
+
+    if (produce.farmer.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized to update this crop' });
+    }
+
+    const updatedProduce = await Produce.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { returnDocument: 'after' }
+    );
+
+    res.status(200).json(updatedProduce);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update produce', error: error.message });
+  }
+};
+
+const deleteProduce = async (req, res) => {
+  try {
+    const produce = await Produce.findById(req.params.id);
+    if (!produce) return res.status(404).json({ message: 'Produce not found' });
+
+    if (produce.farmer.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized to delete this crop' });
+    }
+
+    await produce.deleteOne();
+    res.status(200).json({ id: req.params.id, message: 'Produce deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete produce', error: error.message });
+  }
+};
+
+// This is the function that gets the single item for the details page!
+const getProduceById = async (req, res) => {
+  try {
+    const produce = await Produce.findById(req.params.id)
+      .populate('farmer', 'firstName lastName farmVillageName district');
+      
+    if (!produce) {
+      return res.status(404).json({ message: 'Produce not found' });
+    }
+    res.status(200).json(produce);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch produce', error: error.message });
+  }
+};
+
+module.exports = { getProduce, getFarmerProduce, addProduce, updateProduce, deleteProduce, getProduceById };

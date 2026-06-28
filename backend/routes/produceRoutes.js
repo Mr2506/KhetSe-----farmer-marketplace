@@ -1,12 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { getProduce, addProduce } = require('../controllers/produceController');
+
+// THE FIX IS HERE: We added 'getProduceById' to the end of this list!
+const { getProduce, getFarmerProduce, addProduce, updateProduce, deleteProduce, getProduceById } = require('../controllers/produceController');
 const { protect } = require('../middleware/authMiddleware');
 
-// GET request to /api/produce -> Anyone can view the crops
+// Public route for Buyers to see all crops
 router.get('/', getProduce);
 
-// POST request to /api/produce -> MUST go through the Bouncer (protect) first!
+// Protected route for Farmers to see their own listings
+router.get('/mylistings', protect, getFarmerProduce);
+
+// Protected route to post a new listing
 router.post('/', protect, addProduce);
+
+// Protected routes to Update (Edit Price/Qty/Pause) and Delete individual items
+router.put('/:id', protect, updateProduce);
+router.delete('/:id', protect, deleteProduce);
+
+// Public route to get a single crop by ID (Must be at the bottom!)
+router.get('/:id', getProduceById);
 
 module.exports = router;
