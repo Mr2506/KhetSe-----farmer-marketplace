@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -7,9 +8,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: 'Plus Jakarta Sans', var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-inter);
+  --font-heading: 'Plus Jakarta Sans', var(--font-inter), system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,38 +50,50 @@
 }
 
 :root {
-  --background: oklch(0.976 0.015 82);
-  --foreground: oklch(0.22 0.02 85);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 85);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 85);
-  --primary: oklch(0.49 0.15 145);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.95 0.02 82);
-  --secondary-foreground: oklch(0.22 0.02 85);
-  --muted: oklch(0.95 0.02 82);
-  --muted-foreground: oklch(0.49 0.02 85);
-  --accent: oklch(0.94 0.05 142);
-  --accent-foreground: oklch(0.24 0.05 142);
+  /* KhetSe Design System */
+  --ks-green:        #2E7D32;
+  --ks-green-dark:   #1B5E20;
+  --ks-green-light:  #F0FAF0;
+  --ks-amber:        #F9A825;
+  --ks-amber-light:  #FFF8E1;
+  --ks-bg:           #F7F8F5;
+  --ks-text:         #1A1A1A;
+  --ks-muted:        #6B7280;
+  --ks-border:       #E5E7EB;
+  --ks-card:         #FFFFFF;
+  /* Tailwind / shadcn tokens */
+  --background: #F7F8F5;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --primary: #2E7D32;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0FAF0;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F3F4F2;
+  --muted-foreground: #6B7280;
+  --accent: #F0FAF0;
+  --accent-foreground: #1B5E20;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.015 82);
-  --input: oklch(0.9 0.015 82);
-  --ring: oklch(0.49 0.15 145);
-  --chart-1: oklch(0.49 0.15 145);
-  --chart-2: oklch(0.64 0.16 92);
-  --chart-3: oklch(0.56 0.13 52);
-  --chart-4: oklch(0.7 0.12 145);
-  --chart-5: oklch(0.78 0.1 82);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0.01 82);
-  --sidebar-foreground: oklch(0.22 0.02 85);
-  --sidebar-primary: oklch(0.49 0.15 145);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.94 0.05 142);
-  --sidebar-accent-foreground: oklch(0.24 0.05 142);
-  --sidebar-border: oklch(0.9 0.015 82);
-  --sidebar-ring: oklch(0.49 0.15 145);
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #2E7D32;
+  --chart-1: #2E7D32;
+  --chart-2: #F9A825;
+  --chart-3: #1B5E20;
+  --chart-4: #66BB6A;
+  --chart-5: #A5D6A7;
+  --radius: 0.75rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #2E7D32;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F0FAF0;
+  --sidebar-accent-foreground: #1B5E20;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #2E7D32;
 }
 
 .dark {
@@ -128,3 +141,54 @@
     @apply font-sans;
   }
 }
+
+/* Custom animation utilities for hover menus and popovers */
+@layer utilities {
+  .nav-popover-hover {
+    @apply opacity-0 invisible scale-95 translate-y-1 transition-all duration-200 ease-out pointer-events-none;
+  }
+  .group:hover .nav-popover-hover,
+  .group:focus-within .nav-popover-hover {
+    @apply opacity-100 visible scale-100 translate-y-0 pointer-events-auto;
+  }
+
+  /* KhetSe hero grain texture — CSS noise overlay, no image needed */
+  .ks-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    border-radius: inherit;
+    z-index: 1;
+  }
+
+  /* Sidebar active indicator — green left bar */
+  .ks-nav-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    border-radius: 0 3px 3px 0;
+    background: #FFFFFF;
+    opacity: 0.5;
+  }
+
+  /* Smooth global transitions */
+  .ks-card {
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  }
+  .ks-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+  }
+
+  /* Focus ring system */
+  .ks-focus:focus-visible {
+    outline: 2px solid #2E7D32;
+    outline-offset: 2px;
+  }
+}

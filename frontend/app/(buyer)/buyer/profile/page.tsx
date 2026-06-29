@@ -26,10 +26,10 @@ export default async function BuyerProfilePage() {
   const user = mockUser;
 
   return (
-    <div className="mx-auto max-w-xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Profile</h1>
-        <p className="text-sm text-zinc-500">Your buyer details and preferences</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900">Profile</h1>
+        <p className="mt-1 text-sm text-zinc-500">Your buyer details and preferences</p>
       </div>
 
       <BuyerProfileForm
@@ -45,11 +45,14 @@ export default async function BuyerProfilePage() {
       />
 
       {user.savedFarmers.length > 0 && (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-          <p className="text-sm font-semibold">Saved farmers</p>
-          <ul className="mt-2 space-y-1 text-sm text-zinc-600">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-5 shadow-sm">
+          <p className="text-sm font-bold text-zinc-900">Saved farmers</p>
+          <ul className="mt-2 space-y-1.5 text-sm text-zinc-600">
             {user.savedFarmers.map((s) => (
-              <li key={s.id}>{(s.farmer as any).user?.name ?? (s.farmer as any).name} — {s.farmer.village}</li>
+              <li key={s.id} className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <span>{(s.farmer as any).user?.name ?? (s.farmer as any).name} — <span className="text-zinc-500">{s.farmer.village}</span></span>
+              </li>
             ))}
           </ul>
         </div>

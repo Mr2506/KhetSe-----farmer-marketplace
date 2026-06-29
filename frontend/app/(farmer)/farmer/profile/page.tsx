@@ -19,20 +19,20 @@ export default async function FarmerProfilePage() {
   const farmer = mockFarmerProfile;
 
   return (
-    <div className="mx-auto max-w-xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Farm profile</h1>
-        <p className="text-sm text-zinc-500">Account details & earnings</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900">Farm profile</h1>
+        <p className="mt-1 text-sm text-zinc-500">Account details & earnings</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-          <p className="text-xs text-zinc-500">This week</p>
-          <p className="text-2xl font-bold text-emerald-700">{formatCurrency(farmer.weekEarnings)}</p>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">This week earnings</p>
+          <p className="text-2xl sm:text-3xl font-bold text-emerald-700 mt-1">{formatCurrency(farmer.weekEarnings)}</p>
         </div>
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-          <p className="text-xs text-zinc-500">vs mandi rate</p>
-          <p className="text-2xl font-bold text-amber-700">+{farmer.vsMandi}%</p>
+        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">vs mandi rate</p>
+          <p className="text-2xl sm:text-3xl font-bold text-amber-700 mt-1">+{farmer.vsMandi}%</p>
         </div>
       </div>
 

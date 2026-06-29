@@ -1,5 +1,5 @@
-import UserPicker from "@/app/login/login-client";
+import { redirect } from "next/navigation";
 
 export default function UserPage() {
-  return <UserPicker />;
+  redirect("/login");
 }

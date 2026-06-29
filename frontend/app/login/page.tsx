@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase"; 
 import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from "firebase/auth";
 import { useRouter } from "next/navigation"; 
+import { Leaf, ShoppingBag, Tractor, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 
 declare global {
   interface Window {
@@ -19,6 +20,7 @@ export default function LoginPage() {
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [selectedRole, setSelectedRole] = useState<"buyer" | "farmer" | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -41,6 +43,7 @@ export default function LoginPage() {
   const requestOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
+    setIsLoading(true);
     const formattedNumber = `+91${phoneNumber}`;
 
     try {
@@ -55,26 +58,28 @@ export default function LoginPage() {
     } catch (error: any) {
       console.error(error);
       setMessage({ text: "Error sending OTP: " + error.message, type: "error" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const verifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
+    setIsLoading(true);
     
     if (!confirmationResult) {
       setMessage({ text: "Please request OTP first", type: "error" });
+      setIsLoading(false);
       return;
     }
 
     try {
-      // 1. Verify with Google Firebase
       const result = await confirmationResult.confirm(otp);
       const firebaseToken = await result.user.getIdToken();
       
       setMessage({ text: "Verifying with server...", type: "success" });
 
-      // 2. Send token to Node.js Backend!
       const response = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -87,15 +92,12 @@ export default function LoginPage() {
         throw new Error(data.message || "Login failed");
       }
 
-      // 3. Success! Save Token & Route based on Backend Database Role
       localStorage.setItem("khetse_token", data.token);
       localStorage.setItem("khetse_role", data.role);
 
       setMessage({ text: `Welcome back, ${data.firstName || 'User'}!`, type: "success" });
 
-      // 4. THE MAGIC ROUTER
       setTimeout(() => {
-        // Routes to Meet's specific dashboards based on backend truth
         if (data.role === "Admin") router.push("/admin"); 
         else if (data.role === "Farmer") router.push("/farmer");
         else router.push("/buyer");
@@ -103,13 +105,14 @@ export default function LoginPage() {
 
     } catch (error: any) {
       console.error(error);
-      // If the backend says "Account not found", tell them to sign up!
       if (error.message.includes("not found")) {
         setMessage({ text: "Account not found. Please select a role below and click Create Account.", type: "error" });
-        setStep(1); // Send them back to step 1 to choose a role
+        setStep(1);
       } else {
         setMessage({ text: "Invalid OTP or Login Failed.", type: "error" });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -122,81 +125,220 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f6f4ef] px-4 py-10 font-sans">
-      <div className="w-full max-w-[440px] bg-white rounded-3xl p-8 shadow-sm border border-zinc-200 transition-all">
-        
-        {/* LOGO MATCHING MEET'S THEME */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="bg-emerald-600 text-white p-2.5 rounded-xl mb-3 shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-          </div>
-          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">KhetSe</h1>
+    <div className="min-h-screen flex font-sans bg-[#f6f4ef]">
+      {/* Left panel — branding */}
+      <div className="hidden lg:flex lg:w-[44%] flex-col justify-between bg-emerald-950 text-white p-12 relative overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 h-96 w-96 rounded-full bg-emerald-400 blur-3xl -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-teal-400 blur-3xl translate-x-1/2 translate-y-1/2" />
         </div>
 
-        {message && (
-          <div className={`mb-4 p-3 rounded-xl text-sm font-medium text-center ${message.type === "error" ? "bg-red-50 text-red-600 border border-red-100" : "bg-emerald-50 text-emerald-700 border border-emerald-100"}`}>
-            {message.text}
-          </div>
-        )}
-
-        {step === 1 ? (
-          <div>
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-zinc-900 tracking-tight">Welcome back</h2>
-              <p className="text-sm text-zinc-500 mt-1">Login to your account</p>
+        <div className="relative">
+          <div className="flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm">
+              <Leaf className="h-5 w-5 text-emerald-300" />
             </div>
+            <span className="text-xl font-bold tracking-tight">KhetSe</span>
+          </div>
+        </div>
 
-            <form onSubmit={requestOTP} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-zinc-600 mb-1.5 uppercase tracking-wide">Phone number</label>
-                <div className="flex">
-                  <div className="flex items-center justify-center bg-zinc-50 border border-zinc-200 border-r-0 rounded-l-xl px-4 text-zinc-600 font-medium">+91</div>
-                  <input type="tel" placeholder="98765 43210" maxLength={10} className="w-full p-3.5 border border-zinc-200 rounded-r-xl outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))} required />
+        <div className="relative space-y-6">
+          <div>
+            <p className="text-emerald-400 text-sm font-semibold uppercase tracking-widest mb-3">Direct Farm Marketplace</p>
+            <h2 className="text-4xl font-bold leading-tight text-white">
+              Farm fresh produce, straight to your table
+            </h2>
+            <p className="mt-4 text-emerald-200/80 text-lg leading-relaxed">
+              Connect directly with verified local farmers. Zero middlemen, maximum freshness.
+            </p>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            {[
+              "Harvested same-morning produce",
+              "Verified local farmers only",
+              "Transparent farm-direct pricing",
+            ].map((text) => (
+              <div key={text} className="flex items-center gap-3">
+                <div className="h-5 w-5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                </div>
+                <span className="text-sm text-emerald-100/90">{text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative">
+          <p className="text-emerald-400/60 text-xs">&copy; 2025 KhetSe. Built in Gujarat.</p>
+        </div>
+      </div>
+
+      {/* Right panel — form */}
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-16">
+        <div className="w-full max-w-[400px]">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-2 mb-10 lg:hidden">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-600 text-white">
+              <Leaf className="h-5 w-5" />
+            </div>
+            <span className="text-lg font-bold text-zinc-900">KhetSe</span>
+          </div>
+
+          {message && (
+            <div className={`mb-6 flex items-start gap-3 rounded-2xl p-4 text-sm font-medium border ${
+              message.type === "error"
+                ? "bg-red-50 text-red-700 border-red-200/60"
+                : "bg-emerald-50 text-emerald-800 border-emerald-200/60"
+            }`}>
+              {message.type === "error"
+                ? <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-red-500" />
+                : <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-emerald-600" />
+              }
+              {message.text}
+            </div>
+          )}
+
+          {step === 1 ? (
+            <div>
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Welcome back</h1>
+                <p className="text-sm text-zinc-500 mt-1.5 leading-relaxed">Sign in using your registered phone number</p>
+              </div>
+
+              <form onSubmit={requestOTP} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-600 mb-2 uppercase tracking-wider">
+                    Phone Number
+                  </label>
+                  <div className="flex rounded-xl overflow-hidden border border-zinc-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all">
+                    <div className="flex items-center justify-center bg-zinc-50 border-r border-zinc-300 px-4 py-3 text-zinc-700 font-semibold text-sm shrink-0">
+                      +91
+                    </div>
+                    <input
+                      type="tel"
+                      placeholder="98765 43210"
+                      maxLength={10}
+                      className="flex-1 px-4 py-3 bg-white text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                      required
+                    />
+                  </div>
+                </div>
+                <div id="recaptcha-container" />
+                <button
+                  type="submit"
+                  disabled={isLoading || phoneNumber.length < 10}
+                  className="group w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-500 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-emerald-600/20"
+                >
+                  {isLoading ? "Sending..." : "Send OTP"}
+                  {!isLoading && <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />}
+                </button>
+              </form>
+
+              <div className="mt-10 mb-7">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-px bg-zinc-200" />
+                  <span className="text-xs font-medium text-zinc-400 whitespace-nowrap">New to KhetSe?</span>
+                  <div className="flex-1 h-px bg-zinc-200" />
                 </div>
               </div>
-              <div id="recaptcha-container"></div>
-              <button type="submit" className="w-full bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-500 transition shadow-sm">
-                Send OTP
-              </button>
-            </form>
 
-            {/* NEW SIGNUP SECTION */}
-            <div className="mt-8 mb-6 flex items-center justify-center text-xs text-zinc-400 font-medium">
-              <span className="bg-zinc-200 h-px w-full"></span><span className="px-3 whitespace-nowrap">New to KhetSe?</span><span className="bg-zinc-200 h-px w-full"></span>
-            </div>
+              <div className="space-y-4">
+                <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Select your role to register</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    {
+                      role: "buyer" as const,
+                      label: "Buyer",
+                      subtitle: "Shop fresh produce",
+                      icon: ShoppingBag,
+                    },
+                    {
+                      role: "farmer" as const,
+                      label: "Farmer",
+                      subtitle: "Sell your harvest",
+                      icon: Tractor,
+                    },
+                  ].map(({ role, label, subtitle, icon: Icon }) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => setSelectedRole(role)}
+                      className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all duration-200 ${
+                        selectedRole === role
+                          ? "border-emerald-500 bg-emerald-50 shadow-sm shadow-emerald-500/10"
+                          : "border-zinc-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40"
+                      }`}
+                    >
+                      <div className={`grid h-10 w-10 place-items-center rounded-xl transition-colors ${
+                        selectedRole === role ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-500"
+                      }`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div className="text-center">
+                        <p className={`text-sm font-bold transition-colors ${selectedRole === role ? "text-emerald-800" : "text-zinc-700"}`}>
+                          {label}
+                        </p>
+                        <p className={`text-[11px] transition-colors ${selectedRole === role ? "text-emerald-600" : "text-zinc-400"}`}>
+                          {subtitle}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div onClick={() => setSelectedRole("buyer")} className={`border rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition ${selectedRole === "buyer" ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-zinc-200 text-zinc-600 hover:border-emerald-600 hover:bg-emerald-50"}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span className="text-sm font-bold">Buyer</span>
-              </div>
-              
-              <div onClick={() => setSelectedRole("farmer")} className={`border rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition ${selectedRole === "farmer" ? "border-emerald-600 bg-emerald-50 text-emerald-700" : "border-zinc-200 text-zinc-600 hover:border-emerald-600 hover:bg-emerald-50"}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2"><path d="M3 18h18"/><path d="M14 18v-4h4v4"/><path d="M8 12h4"/><path d="M8 18v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/><path d="M15 8V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v4"/></svg>
-                <span className="text-sm font-bold">Farmer</span>
+                <button
+                  type="button"
+                  onClick={handleSignupClick}
+                  disabled={!selectedRole}
+                  className="w-full rounded-xl border-2 border-zinc-200 bg-white py-3.5 text-sm font-semibold text-zinc-700 hover:border-emerald-400 hover:text-emerald-700 hover:bg-emerald-50/40 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Create Account
+                </button>
               </div>
             </div>
+          ) : (
+            <div>
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Enter your OTP</h1>
+                <p className="text-sm text-zinc-500 mt-1.5">
+                  Sent to +91 {phoneNumber}{" "}
+                  <button onClick={() => setStep(1)} className="text-emerald-600 font-semibold hover:underline ml-1 transition-colors">
+                    Change
+                  </button>
+                </p>
+              </div>
 
-            <button onClick={handleSignupClick} className="w-full bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-500 transition shadow-sm">
-              Create Account
-            </button>
-          </div>
-        ) : (
-          <div>
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-zinc-900 tracking-tight">Enter OTP</h2>
-              <p className="text-sm text-zinc-500 mt-1">Sent to +91 {phoneNumber} <button onClick={() => setStep(1)} className="text-emerald-600 font-medium hover:underline ml-1">Change</button></p>
+              <form onSubmit={verifyOTP} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-600 mb-2 uppercase tracking-wider">
+                    6-Digit Code
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="• • • • • •"
+                    maxLength={6}
+                    className="w-full rounded-xl border-2 border-zinc-200 px-4 py-4 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 transition-all text-center tracking-[0.5em] text-2xl font-bold text-zinc-900 bg-zinc-50/50"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoading || otp.length < 6}
+                  className="group w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-500 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-emerald-600/20"
+                >
+                  {isLoading ? "Verifying..." : "Verify & Sign In"}
+                  {!isLoading && <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />}
+                </button>
+              </form>
             </div>
-            <form onSubmit={verifyOTP} className="space-y-6">
-              <div>
-                <input type="text" placeholder="• • • • • •" maxLength={6} className="w-full p-4 border border-zinc-200 rounded-xl outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition text-center tracking-[1em] text-xl font-bold text-zinc-900 bg-zinc-50" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} required />
-              </div>
-              <button type="submit" className="w-full bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-500 transition shadow-sm">
-                Verify & Login
-              </button>
-            </form>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
