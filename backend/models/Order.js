@@ -28,8 +28,8 @@ const orderSchema = mongoose.Schema(
      status: {
       type: String,
       required: true,
-      enum: ['Confirmed', 'Completed', 'Cancelled'], // <--- Make sure 'Confirmed' is in this list!
-      default: 'Confirmed',
+      enum: ['Pending', 'Confirmed', 'Delivered', 'Cancelled'],
+      default: 'pending',
     }
   },
   {

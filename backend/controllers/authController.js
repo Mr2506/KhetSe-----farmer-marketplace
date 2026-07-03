@@ -1,4 +1,3 @@
-// ... existing code ...
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -109,4 +108,75 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+// @desc    Check if a phone number is registered
+// @route   POST /api/users/check-phone
+const checkPhone = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    
+    // Look up the phone number in the database
+    const user = await User.findOne({ phone });
+    
+    if (user) {
+      res.status(200).json({ exists: true });
+    } else {
+      res.status(404).json({ exists: false, message: 'Account not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ exists: false, message: 'Server error', error: error.message });
+  }
+};
+
+// @desc    Get user profile
+// @route   GET /api/users/profile
+const getUserProfile = async (req, res) => {
+  try {
+    // req.user is provided by our "protect" Bouncer middleware!
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      // Common fields
+      user.firstName = req.body.firstName || user.firstName;
+      user.lastName = req.body.lastName !== undefined ? req.body.lastName : user.lastName;
+      
+      // Buyer fields
+      user.buyingFor = req.body.buyingFor || user.buyingFor;
+      user.cityArea = req.body.cityArea || user.cityArea;
+      
+      // FARMER FIELDS (Added these 3 lines!)
+      if (req.body.farmVillageName !== undefined) user.farmVillageName = req.body.farmVillageName;
+      if (req.body.farmSize !== undefined) user.farmSize = req.body.farmSize;
+      if (req.body.cropsGrown !== undefined) user.cropsGrown = req.body.cropsGrown;
+      
+      // Toggle states
+      if (req.body.notifyNewOrders !== undefined) user.notifyNewOrders = req.body.notifyNewOrders;
+      if (req.body.notifyLowStock !== undefined) user.notifyLowStock = req.body.notifyLowStock;
+      if (req.body.notifySms !== undefined) user.notifySms = req.body.notifySms;
+      
+      const updatedUser = await user.save();
+      res.status(200).json(updatedUser);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, checkPhone, getUserProfile, updateUserProfile };

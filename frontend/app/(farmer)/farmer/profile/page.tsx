@@ -1,22 +1,49 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { FarmerProfileForm } from "@/components/farmer/profile-form";
 import { formatCurrency } from "@/lib/utils";
 
-const mockFarmerProfile = {
-  name: "Ramesh Patel",
-  phone: "9825012345",
-  farmSize: "5 acres",
-  village: "Olpad",
-  cropsGrown: ["Tomato", "Cabbage", "Rice"],
-  verification: "Verified" as const,
-  notifyNewOrders: true,
-  notifyLowStock: true,
-  notifySms: false,
-  weekEarnings: 2287,
-  vsMandi: 28,
-};
+export default function FarmerProfilePage() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-export default async function FarmerProfilePage() {
-  const farmer = mockFarmerProfile;
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("khetse_token");
+      if (!token) return;
+
+      try {
+        const res = await fetch("http://localhost:5000/api/users/profile", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-3xl space-y-6 animate-pulse">
+        <div className="h-20 bg-zinc-100 rounded-xl" />
+        <div className="h-64 bg-zinc-100 rounded-xl" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <div className="p-10 text-center text-red-500 font-bold">Failed to load profile.</div>;
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -25,28 +52,31 @@ export default async function FarmerProfilePage() {
         <p className="mt-1 text-sm text-zinc-500">Account details & earnings</p>
       </div>
 
+      {/* Leaving Meet's fake earnings stats here for now until we build the order aggregation */}
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">This week earnings</p>
-          <p className="text-2xl sm:text-3xl font-bold text-emerald-700 mt-1">{formatCurrency(farmer.weekEarnings)}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-emerald-700 mt-1">{formatCurrency(2287)}</p>
         </div>
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">vs mandi rate</p>
-          <p className="text-2xl sm:text-3xl font-bold text-amber-700 mt-1">+{farmer.vsMandi}%</p>
+          <p className="text-2xl sm:text-3xl font-bold text-amber-700 mt-1">+28%</p>
         </div>
       </div>
 
       <FarmerProfileForm
         defaultValues={{
-          name: farmer.name,
-          phone: farmer.phone,
-          farmSize: farmer.farmSize,
-          village: farmer.village,
-          cropsGrown: farmer.cropsGrown,
-          verification: farmer.verification,
-          notifyNewOrders: farmer.notifyNewOrders,
-          notifyLowStock: farmer.notifyLowStock,
-          notifySms: farmer.notifySms,
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
+          phone: user.phone,
+          farmSize: user.farmSize || "",
+          farmVillageName: user.farmVillageName || "",
+          cropsGrown: user.cropsGrown || [],
+          // Keep verification static as "Pending" until we build an admin approval system
+          verification: "Pending",
+          notifyNewOrders: user.notifyNewOrders !== undefined ? user.notifyNewOrders : true,
+          notifyLowStock: user.notifyLowStock !== undefined ? user.notifyLowStock : true,
+          notifySms: user.notifySms !== undefined ? user.notifySms : false,
         }}
       />
     </div>

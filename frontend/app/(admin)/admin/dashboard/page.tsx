@@ -1,19 +1,48 @@
-import { getAdminStats, getAllOrders } from "@/lib/data";
+"use client";
+
+import { useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { Users, Tractor, ShoppingBag, LayoutGrid, TrendingUp, ArrowUpRight, Activity } from "lucide-react";
 
 const STAT_CONFIG = [
   { key: "buyers",   label: "Registered Buyers",  icon: Users,       color: "bg-blue-50 text-blue-600",   border: "border-blue-200/60" },
-  { key: "farmers",  label: "Registered Farmers",  icon: Tractor,     color: "bg-emerald-50 text-emerald-600", border: "border-emerald-200/60" },
-  { key: "orders",   label: "Total Orders",        icon: ShoppingBag, color: "bg-purple-50 text-purple-600", border: "border-purple-200/60" },
-  { key: "listings", label: "Active Listings",     icon: LayoutGrid,  color: "bg-amber-50 text-amber-600",  border: "border-amber-200/60" },
+  { key: "farmers",  label: "Registered Farmers", icon: Tractor,     color: "bg-emerald-50 text-emerald-600", border: "border-emerald-200/60" },
+  { key: "orders",   label: "Total Orders",       icon: ShoppingBag, color: "bg-purple-50 text-purple-600", border: "border-purple-200/60" },
+  { key: "listings", label: "Active Listings",    icon: LayoutGrid,  color: "bg-amber-50 text-amber-600",  border: "border-amber-200/60" },
 ];
 
-const TRENDS = ["+12% this month", "+8% this month", "", "Live on platform"];
+export default function AdminDashboardPage() {
+  const [stats, setStats] = useState({ buyers: 0, farmers: 0, orders: 0, listings: 0 });
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function AdminDashboardPage() {
-  const stats = await getAdminStats();
-  const orders = await getAllOrders();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("khetse_token");
+        if (!token) return;
+
+        // Fetch Stats and Orders from our Express Backend simultaneously
+        const [statsRes, ordersRes] = await Promise.all([
+          fetch("http://localhost:5000/api/admin/stats", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch("http://localhost:5000/api/admin/orders", { headers: { Authorization: `Bearer ${token}` } })
+        ]);
+
+        if (statsRes.ok && ordersRes.ok) {
+          setStats(await statsRes.json());
+          setOrders(await ordersRes.json());
+        }
+      } catch (error) {
+        console.error("Failed to fetch admin data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div className="p-8 text-zinc-500 animate-pulse">Loading dashboard...</div>;
 
   const thisMonth = orders.filter((o) => {
     const d = new Date(o.placedAt);
@@ -23,13 +52,13 @@ export default async function AdminDashboardPage() {
 
   const statCards = [
     { label: "Registered Buyers",  value: stats.buyers,   trend: "+12% this month",          hasGrowth: true },
-    { label: "Registered Farmers", value: stats.farmers,  trend: "+8% this month",            hasGrowth: true },
+    { label: "Registered Farmers", value: stats.farmers,  trend: "+8% this month",           hasGrowth: true },
     { label: "Total Orders",       value: stats.orders,   trend: `${thisMonth.length} this month`, hasGrowth: false },
     { label: "Active Listings",    value: stats.listings, trend: "Live on platform",          hasGrowth: false },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* Page header */}
       <div>
@@ -96,7 +125,7 @@ export default async function AdminDashboardPage() {
                     <span className="mx-1.5 text-zinc-300">→</span>
                     {o.farmerName}
                   </p>
-                  <p className="text-[11px] text-zinc-400 font-mono truncate">{o.id}</p>
+                 <p className="text-[11px] text-zinc-400 font-mono truncate">#{o.id.slice(-8).toUpperCase()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">

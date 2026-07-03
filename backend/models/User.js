@@ -22,8 +22,11 @@ const userSchema = mongoose.Schema(
     },
     cityArea: {
       type: String,
-      required: false, // Optional, only for buyers
     },
+    // ADDED THESE 3 NEW LINES FOR TOGGLES!
+    notifyNewOrders: { type: Boolean, default: true },
+    notifyLowStock: { type: Boolean, default: false },
+    notifySms: { type: Boolean, default: true },
     buyingFor: {
       type: String,
       required: false, // Optional, only for buyers

@@ -4,12 +4,13 @@ import { MapPin, Phone, Package, ChevronRight } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  Placed:    { bg: "bg-blue-50",   text: "text-blue-700",   dot: "bg-blue-500" },
-  Accepted:  { bg: "bg-amber-50",  text: "text-amber-700",  dot: "bg-amber-500" },
+  Confirmed: { bg: "bg-blue-50",   text: "text-blue-700",  dot: "bg-blue-500" }, // Added to match backend!
+  Placed:    { bg: "bg-blue-50",   text: "text-blue-700",  dot: "bg-blue-500" },
+  Accepted:  { bg: "bg-amber-50",  text: "text-amber-700", dot: "bg-amber-500" },
   Packed:    { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500" },
   Shipped:   { bg: "bg-indigo-50", text: "text-indigo-700", dot: "bg-indigo-500" },
   Delivered: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500" },
-  Cancelled: { bg: "bg-red-50",    text: "text-red-700",    dot: "bg-red-500" },
+  Cancelled: { bg: "bg-red-50",    text: "text-red-700",   dot: "bg-red-500" },
 };
 
 export function BuyerOrderCard({ order }: { order: any }) {

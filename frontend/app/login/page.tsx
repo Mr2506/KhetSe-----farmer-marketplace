@@ -47,6 +47,21 @@ export default function LoginPage() {
     const formattedNumber = `+91${phoneNumber}`;
 
     try {
+      // 1. SMART PRE-CHECK: Ask Node.js if this number exists in MongoDB
+      const checkRes = await fetch("http://localhost:5000/api/users/check-phone", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: formattedNumber })
+      });
+      
+      const checkData = await checkRes.json();
+      
+      // If the backend says the user doesn't exist, stop immediately!
+      if (!checkRes.ok || !checkData.exists) {
+         throw new Error("ACCOUNT_NOT_FOUND"); 
+      }
+
+      // 2. If they do exist, proceed with Firebase SMS
       if (typeof window === "undefined" || !window.recaptchaVerifier) {
         throw new Error("Security check is still loading, please try again.");
       }
@@ -55,9 +70,15 @@ export default function LoginPage() {
       setConfirmationResult(confirmation);
       setStep(2);
       setMessage({ text: "OTP Sent successfully!", type: "success" });
+      
     } catch (error: any) {
       console.error(error);
-      setMessage({ text: "Error sending OTP: " + error.message, type: "error" });
+      // Catch our custom error and show the exact message you wanted
+      if (error.message === "ACCOUNT_NOT_FOUND") {
+         setMessage({ text: "Account not found. Please select a role below and click Create Account.", type: "error" });
+      } else {
+         setMessage({ text: "Error sending OTP: " + error.message, type: "error" });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -171,7 +192,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative">
-          <p className="text-emerald-400/60 text-xs">&copy; 2025 KhetSe. Built in Gujarat.</p>
+          <p className="text-emerald-400/60 text-xs">&copy; 2026 KhetSe. Built in Gujarat.</p>
         </div>
       </div>
 
@@ -233,7 +254,7 @@ export default function LoginPage() {
                   disabled={isLoading || phoneNumber.length < 10}
                   className="group w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-500 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-emerald-600/20"
                 >
-                  {isLoading ? "Sending..." : "Send OTP"}
+                  {isLoading ? "Checking..." : "Send OTP"}
                   {!isLoading && <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />}
                 </button>
               </form>

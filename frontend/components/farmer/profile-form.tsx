@@ -4,14 +4,13 @@ import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 import { User, Phone, Sprout, MapPin, Bell, Save, ShieldCheck, ShieldAlert, ShieldQuestion } from "lucide-react";
 
-import { updateFarmerProfileAction } from "@/lib/actions";
-
 type Props = {
   defaultValues: {
-    name: string;
+    firstName: string;
+    lastName: string;
     phone: string;
     farmSize: string;
-    village: string;
+    farmVillageName: string;
     cropsGrown: string[];
     verification: string;
     notifyNewOrders: boolean;
@@ -33,17 +32,38 @@ export function FarmerProfileForm({ defaultValues }: Props) {
   async function submit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      await updateFarmerProfileAction({
-        name: form.name,
-        farmSize: form.farmSize,
-        village: form.village,
-        cropsGrown: form.cropsGrown,
-        notifyNewOrders: form.notifyNewOrders,
-        notifyLowStock: form.notifyLowStock,
-        notifySms: form.notifySms,
+      const token = localStorage.getItem("khetse_token");
+      if (!token) throw new Error("Not authenticated");
+
+      const res = await fetch("http://localhost:5000/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          farmSize: form.farmSize,
+          farmVillageName: form.farmVillageName,
+          cropsGrown: form.cropsGrown,
+          notifyNewOrders: form.notifyNewOrders,
+          notifyLowStock: form.notifyLowStock,
+          notifySms: form.notifySms
+        })
       });
-      toast.success("Profile updated successfully");
+
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      toast.success("Profile updated successfully!");
+      
+      // Refresh to update header name instantly
+      window.location.reload(); 
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -70,16 +90,30 @@ export function FarmerProfileForm({ defaultValues }: Props) {
           </div>
           <h3 className="text-sm font-bold text-zinc-800">Personal Information</h3>
         </div>
+        
         <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Full Name</label>
-            <input
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Your full name"
-              className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50"
-            />
+          {/* SIDE-BY-SIDE FIRST & LAST NAME */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">First Name</label>
+              <input
+                value={form.firstName}
+                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50"
+                placeholder="Ramesh"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Last Name</label>
+              <input
+                value={form.lastName}
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50"
+                placeholder="Patel"
+              />
+            </div>
           </div>
+
           <div>
             <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">
               <span className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> Phone</span>
@@ -104,22 +138,30 @@ export function FarmerProfileForm({ defaultValues }: Props) {
         </div>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
+            {/* CORRECTED FARM SIZE INPUT */}
             <div>
               <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Farm Size</label>
-              <input
-                value={form.farmSize}
-                onChange={(e) => setForm({ ...form, farmSize: e.target.value })}
-                placeholder="e.g. 5 acres"
-                className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50"
-              />
+              <div className="flex rounded-xl overflow-hidden border border-zinc-200 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all bg-zinc-50/50">
+                <input
+                  value={form.farmSize.replace(/ acres?/g, "")}
+                  onChange={(e) => setForm({ ...form, farmSize: e.target.value ? `${e.target.value} acres` : "" })}
+                  placeholder="e.g. 5"
+                  className="flex-1 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none bg-transparent"
+                />
+                <div className="flex items-center justify-center bg-zinc-100 border-l border-zinc-200 px-4 text-zinc-500 font-semibold text-sm shrink-0 select-none">
+                  acres
+                </div>
+              </div>
             </div>
+            {/* END CORRECTED FARM SIZE INPUT */}
+            
             <div>
               <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">
                 <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> Village</span>
               </label>
               <input
-                value={form.village}
-                onChange={(e) => setForm({ ...form, village: e.target.value })}
+                value={form.farmVillageName}
+                onChange={(e) => setForm({ ...form, farmVillageName: e.target.value })}
                 placeholder="Village name"
                 className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50"
               />

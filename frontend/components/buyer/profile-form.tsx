@@ -4,11 +4,10 @@ import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 import { User, Phone, MapPin, Bell, Save, ShoppingBag } from "lucide-react";
 
-import { updateBuyerProfileAction } from "@/lib/actions";
-
 type Props = {
   defaultValues: {
-    name: string;
+    firstName: string;
+    lastName: string;
     phone: string;
     buyerType: "HOUSEHOLD" | "RESTAURANT" | "SHOP";
     addresses: string[];
@@ -31,16 +30,42 @@ export function BuyerProfileForm({ defaultValues }: Props) {
   async function submit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      await updateBuyerProfileAction({
-        name: form.name,
-        buyerType: form.buyerType,
-        addresses: form.addresses.filter(Boolean),
-        notifyNewOrders: form.notifyNewOrders,
-        notifyLowStock: form.notifyLowStock,
-        notifySms: form.notifySms,
+      const token = localStorage.getItem("khetse_token");
+      if (!token) throw new Error("Not authenticated");
+
+      let buyingFor = "My household";
+      if (form.buyerType === "RESTAURANT") buyingFor = "Restaurant / Business";
+      if (form.buyerType === "SHOP") buyingFor = "Wholesale";
+
+      const res = await fetch("http://localhost:5000/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          buyingFor,
+          cityArea: form.addresses[0] || "",
+          notifyNewOrders: form.notifyNewOrders,
+          notifyLowStock: form.notifyLowStock,
+          notifySms: form.notifySms
+        })
       });
-      toast.success("Profile updated successfully");
+
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      toast.success("Profile updated successfully!");
+      
+      // Refresh to update header name instantly
+      window.location.reload(); 
+      
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -58,14 +83,26 @@ export function BuyerProfileForm({ defaultValues }: Props) {
         </div>
 
         <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Full Name</label>
-            <input
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50"
-              placeholder="Your full name"
-            />
+          {/* SIDE-BY-SIDE FIRST & LAST NAME */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">First Name</label>
+              <input
+                value={form.firstName}
+                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50"
+                placeholder="Amit"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Last Name</label>
+              <input
+                value={form.lastName}
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50"
+                placeholder="Rathod"
+              />
+            </div>
           </div>
 
           <div>
@@ -120,13 +157,13 @@ export function BuyerProfileForm({ defaultValues }: Props) {
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-amber-50 text-amber-600">
             <MapPin className="h-4 w-4" />
           </div>
-          <h3 className="text-sm font-bold text-zinc-800">Delivery Address</h3>
+          <h3 className="text-sm font-bold text-zinc-800">Delivery Address (City / Area)</h3>
         </div>
         <textarea
           value={form.addresses[0] ?? ""}
           onChange={(e) => setForm({ ...form, addresses: [e.target.value] })}
           rows={3}
-          placeholder="Enter your full delivery address..."
+          placeholder="Enter your city/area (e.g. Surat, Adajan)..."
           className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50 resize-none"
         />
       </div>

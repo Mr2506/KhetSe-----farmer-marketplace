@@ -11,7 +11,7 @@ export function BrowseFilters({ categories }: { categories: string[] }) {
     const next = new URLSearchParams(params.toString());
     if (value) next.set(key, value);
     else next.delete(key);
-    router.push(`/buyer/browse?${next.toString()}`);
+    router.push(`/buyer/browse?${next.toString()}`, { scroll: false });
   }
 
   const isOrganicChecked = params.get("organic") === "1";
@@ -99,7 +99,7 @@ export function BrowseFilters({ categories }: { categories: string[] }) {
         {hasFilters && (
           <button
             type="button"
-            onClick={() => router.push("/buyer/browse")}
+            onClick={() => router.push("/buyer/browse", { scroll: false })}
             className="flex h-10 items-center gap-1.5 rounded-xl border border-[#E5E7EB] bg-white px-3.5 text-sm font-semibold text-[#6B7280] hover:border-[#2E7D32]/40 hover:text-[#2E7D32] transition-all duration-150 shrink-0"
           >
             <RotateCcw className="h-3.5 w-3.5" />

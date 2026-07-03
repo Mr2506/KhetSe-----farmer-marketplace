@@ -1,7 +1,7 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
-
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <SessionProvider>{children}</SessionProvider>;
+  // We removed the next-auth SessionProvider! 
+  // This will instantly stop all those annoying 404 console errors.
+  return <>{children}</>;
 }

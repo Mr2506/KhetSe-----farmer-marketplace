@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
 import {
   ChevronDown,
   Leaf,
@@ -12,13 +11,13 @@ import {
   X,
   Sparkles,
   RefreshCw,
-  ArrowRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { navByRole } from "@/components/layout/nav-config";
 import { AppRole, ROLE_HOME, ROLE_LABELS } from "@/lib/roles";
 import { cn } from "@/lib/utils";
+import { auth } from "@/lib/firebase"; 
 
 type RoleShellProps = {
   role: AppRole;
@@ -28,14 +27,42 @@ type RoleShellProps = {
 export function RoleShell({ role, children }: RoleShellProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // ADDED THIS: States to hold the real user data
+  const [userName, setUserName] = useState("User");
+  const [userPhone, setUserPhone] = useState("");
+  const [userRoles, setUserRoles] = useState<AppRole[]>([role]); 
+
+  // ADDED THIS: Fetch the real profile on load!
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("khetse_token");
+      if (!token) return;
+
+      try {
+        const res = await fetch("http://localhost:5000/api/users/profile", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+          setUserName(data.firstName || "User");
+          setUserPhone(data.phone || "");
+          // If they have multiple roles in the DB in the future, set them here
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const links = navByRole[role].filter(
     (link) => link.label.toLowerCase() !== "profile"
   );
 
-  const userRoles = ((session?.user as any)?.roles ?? []) as AppRole[];
   const otherRoles = userRoles.filter((r: AppRole) => r !== role);
 
   async function switchRole(nextRole: AppRole) {
@@ -48,9 +75,20 @@ export function RoleShell({ role, children }: RoleShellProps) {
     router.refresh();
   }
 
-  const userName = session?.user?.name || "User";
-  const userPhoneOrEmail = (session?.user as any)?.phone || session?.user?.email || "";
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error("Firebase signout error", error);
+    }
+    localStorage.removeItem("khetse_token");
+    localStorage.removeItem("khetse_role");
+    router.push("/login");
+  };
+
   const profileHref = `/${role.toLowerCase()}/profile`;
+  
+  // Calculate initials dynamically from our fetched name!
   const initials = userName
     .split(" ")
     .map((n: string) => n[0])
@@ -114,7 +152,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
             })}
           </nav>
 
-          {/* Bottom status card — clean, white, green left-border style */}
+          {/* Bottom status card */}
           <div className="p-4 border-t border-[#E5E7EB]">
             <div className="rounded-xl border-l-[3px] border-l-[#2E7D32] border border-[#E5E7EB] bg-white px-4 py-3.5 shadow-sm">
               <div className="flex items-center gap-2 mb-1">
@@ -207,7 +245,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
 
             <button
               type="button"
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={handleSignOut}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-bold text-red-600 hover:bg-red-100 transition-colors duration-150"
             >
               <LogOut className="h-4 w-4" />
@@ -256,8 +294,8 @@ export function RoleShell({ role, children }: RoleShellProps) {
                   <div className="nav-popover-hover absolute right-0 top-full mt-2 w-72 rounded-2xl border border-[#E5E7EB] bg-white p-3 shadow-2xl shadow-black/10 z-50">
                     <div className="rounded-xl bg-[#F0FAF0] p-3 border border-[#2E7D32]/10 mb-2">
                       <p className="text-xs font-bold text-[#1B5E20]">{userName}</p>
-                      {userPhoneOrEmail && (
-                        <p className="text-[11px] text-[#2E7D32]/80 truncate mt-0.5">{userPhoneOrEmail}</p>
+                      {userPhone && (
+                        <p className="text-[11px] text-[#2E7D32]/80 truncate mt-0.5">+91 {userPhone}</p>
                       )}
                       <div className="mt-2">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[#2E7D32] bg-white px-2 py-0.5 rounded-md border border-[#2E7D32]/20">
@@ -301,7 +339,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
                     <div className="border-t border-[#E5E7EB] pt-2 mt-1">
                       <button
                         type="button"
-                        onClick={() => signOut({ callbackUrl: "/login" })}
+                        onClick={handleSignOut}
                         className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 transition-colors duration-150 hover:bg-red-50"
                       >
                         <LogOut className="h-4 w-4 text-red-500" />
