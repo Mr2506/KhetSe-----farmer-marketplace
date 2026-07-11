@@ -2,8 +2,7 @@
 const express = require('express');
 const router = express.Router();
 
-// WE ADDED updateUserProfile TO THIS LIST!
-const { registerUser, loginUser, checkPhone, getUserProfile, updateUserProfile } = require('../controllers/authController');
+const { registerUser, loginUser, checkPhone, getUserProfile, updateUserProfile, updateUserLocation } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware'); // Import our Bouncer!
 
 router.post('/register', registerUser);
@@ -14,5 +13,6 @@ router.post('/check-phone', checkPhone);
 router.get('/profile', protect, getUserProfile); 
 // PUT (update) profile data
 router.put('/profile', protect, updateUserProfile); 
+router.put('/location', protect, updateUserLocation);
 
 module.exports = router;

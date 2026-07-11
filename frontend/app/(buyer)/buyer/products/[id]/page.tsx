@@ -28,7 +28,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     }
   }
 
-  const listing = {
+const listing = {
     id: item._id,
     cropName: item.name,
     category: item.category,
@@ -40,6 +40,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     photos: item.photos || [],
     description: item.description || "No description provided by the farmer.",
     farmerName: item.farmer ? `${item.farmer.firstName} ${item.farmer.lastName}` : "Unknown Farmer",
+    
+    // NEW: We are extracting the exact GPS coordinates we just unlocked in the backend!
+    farmerLocation: item.farmer?.location || null, 
+    
     village: item.farmer?.farmVillageName || "Local Farm",
     rating: 4.8,
     distance: Math.floor(Math.random() * 14) + 2, 
@@ -121,7 +125,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </p>
           </div>
 
-          <AddToCartPanel 
+           <AddToCartPanel 
             listingId={listing.id} 
             maxQty={listing.quantity} 
             price={listing.price} 
@@ -129,6 +133,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             cropName={listing.cropName}
             farmerName={listing.farmerName}
             photo={listing.photos.length > 0 ? listing.photos[0] : "🌾"}
+            
+            // NEW: Handing the coordinates to the panel so it can save them to the cart!
+            farmerLocation={listing.farmerLocation}
           />
         </div>
       </div>

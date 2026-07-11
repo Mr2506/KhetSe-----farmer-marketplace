@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { BuyerProfileForm } from "@/components/buyer/profile-form";
 import { formatBuyerType } from "@/lib/roles";
+import ProfileLocationSettings from "@/components/ProfileLocationSettings";
 
 export default function BuyerProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -63,12 +64,14 @@ export default function BuyerProfilePage() {
           phone: user.phone,
           buyerType: mappedBuyerType,
           addresses: [user.cityArea || ""],
-          // Pull the real toggles from the database (default true if not set yet)
           notifyNewOrders: user.notifyNewOrders !== undefined ? user.notifyNewOrders : true,
           notifyLowStock: user.notifyLowStock !== undefined ? user.notifyLowStock : false,
           notifySms: user.notifySms !== undefined ? user.notifySms : true,
         }}
       />
+
+      {/* The map is now safely inside the main wrapper! */}
+      <ProfileLocationSettings />
 
       <p className="text-xs text-zinc-400">
         Buyer type: {formatBuyerType(mappedBuyerType)}

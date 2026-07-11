@@ -11,6 +11,7 @@ type Props = {
     phone: string;
     farmSize: string;
     farmVillageName: string;
+    farmAddress: string; // <-- NEW: Added address field
     cropsGrown: string[];
     verification: string;
     notifyNewOrders: boolean;
@@ -48,6 +49,7 @@ export function FarmerProfileForm({ defaultValues }: Props) {
           lastName: form.lastName,
           farmSize: form.farmSize,
           farmVillageName: form.farmVillageName,
+          farmAddress: form.farmAddress, // <-- NEW: Sending to backend
           cropsGrown: form.cropsGrown,
           notifyNewOrders: form.notifyNewOrders,
           notifyLowStock: form.notifyLowStock,
@@ -138,7 +140,6 @@ export function FarmerProfileForm({ defaultValues }: Props) {
         </div>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            {/* CORRECTED FARM SIZE INPUT */}
             <div>
               <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Farm Size</label>
               <div className="flex rounded-xl overflow-hidden border border-zinc-200 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all bg-zinc-50/50">
@@ -153,11 +154,10 @@ export function FarmerProfileForm({ defaultValues }: Props) {
                 </div>
               </div>
             </div>
-            {/* END CORRECTED FARM SIZE INPUT */}
             
             <div>
               <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">
-                <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> Village</span>
+                Village
               </label>
               <input
                 value={form.farmVillageName}
@@ -167,6 +167,20 @@ export function FarmerProfileForm({ defaultValues }: Props) {
               />
             </div>
           </div>
+
+          {/* NEW: Full Address / Landmarks Textarea */}
+          <div>
+            <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">
+              <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> Full Address & Landmarks</span>
+            </label>
+            <textarea
+              value={form.farmAddress}
+              onChange={(e) => setForm({ ...form, farmAddress: e.target.value })}
+              placeholder="e.g., Next to the primary school, behind the old banyan tree. Please call when reaching the main road."
+              className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all bg-zinc-50/50 resize-y min-h-[80px]"
+            />
+          </div>
+
           <div>
             <label className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Crops Grown</label>
             <input

@@ -12,7 +12,8 @@ export function AddToCartPanel({
   unit,
   cropName,
   farmerName,
-  photo
+  photo,
+  farmerLocation // NEW: Catching the coordinates from the Product Page!
 }: {
   listingId: string;
   maxQty: number;
@@ -21,6 +22,7 @@ export function AddToCartPanel({
   cropName: string;
   farmerName: string;
   photo: string;
+  farmerLocation?: { lat: number; lng: number } | null; // NEW: Defining the type
 }) {
   const [qty, setQty] = useState(1);
 
@@ -54,6 +56,7 @@ export function AddToCartPanel({
         unit,
         maxQty,
         quantityOrdered: qty,
+        farmerLocation: farmerLocation || null, // NEW: Saving the GPS coordinates into the Cart!
       });
     }
 

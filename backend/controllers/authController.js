@@ -179,4 +179,33 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, checkPhone, getUserProfile, updateUserProfile };
+// @desc    Update user location coordinates
+// @route   PUT /api/users/location
+// @access  Private
+const updateUserLocation = async (req, res) => {
+  try {
+    const { lat, lng } = req.body;
+
+    if (!lat || !lng) {
+      return res.status(400).json({ message: 'Latitude and longitude are required' });
+    }
+
+    // Find the logged-in user (from auth middleware) and update their location
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.location = { lat, lng };
+    await user.save();
+
+    res.status(200).json({
+      message: 'Location updated successfully',
+      location: user.location
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update location', error: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, checkPhone, getUserProfile, updateUserProfile, updateUserLocation };

@@ -3,7 +3,8 @@ const Produce = require('../models/Produce');
 const getProduce = async (req, res) => {
   try {
     const produce = await Produce.find({ isAvailable: true })
-      .populate('farmer', 'firstName lastName farmVillageName district');
+      // NEW: Added 'location' to the end of this string!
+      .populate('farmer', 'firstName lastName farmVillageName district location');
     res.status(200).json(produce);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch produce', error: error.message });
@@ -85,11 +86,11 @@ const deleteProduce = async (req, res) => {
   }
 };
 
-// This is the function that gets the single item for the details page!
 const getProduceById = async (req, res) => {
   try {
     const produce = await Produce.findById(req.params.id)
-      .populate('farmer', 'firstName lastName farmVillageName district');
+      // NEW: Added 'location' to the end of this string!
+      .populate('farmer', 'firstName lastName farmVillageName district location');
       
     if (!produce) {
       return res.status(404).json({ message: 'Produce not found' });

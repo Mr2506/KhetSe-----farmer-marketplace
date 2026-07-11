@@ -25,6 +25,15 @@ const orderSchema = mongoose.Schema(
       type: Number,
       required: true, // We will calculate this in the controller: quantity * pricePerUnit
     },
+    // Inside your orderSchema definition:
+    pickupLocation: {
+      lat: { type: Number },
+      lng: { type: Number }
+    },
+    dropoffLocation: {
+      lat: { type: Number },
+      lng: { type: Number }
+    },
      status: {
       type: String,
       required: true,

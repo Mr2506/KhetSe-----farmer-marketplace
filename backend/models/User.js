@@ -51,6 +51,10 @@ const userSchema = mongoose.Schema(
       type: [String], // Array of strings (e.g., ['Vegetables', 'Fruits'])
       required: false,
     },
+    location: {
+     lat: { type: Number },
+     lng: { type: Number }
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

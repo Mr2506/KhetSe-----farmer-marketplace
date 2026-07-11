@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FarmerProfileForm } from "@/components/farmer/profile-form";
 import { formatCurrency } from "@/lib/utils";
+import ProfileLocationSettings from "@/components/ProfileLocationSettings";
 
 export default function FarmerProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -63,14 +64,15 @@ export default function FarmerProfilePage() {
           <p className="text-2xl sm:text-3xl font-bold text-amber-700 mt-1">+28%</p>
         </div>
       </div>
-
-      <FarmerProfileForm
+    {/* @ts-ignore */}
+     <FarmerProfileForm
         defaultValues={{
           firstName: user.firstName || "",
           lastName: user.lastName || "",
           phone: user.phone,
           farmSize: user.farmSize || "",
           farmVillageName: user.farmVillageName || "",
+          farmAddress: user.farmAddress || "", 
           cropsGrown: user.cropsGrown || [],
           // Keep verification static as "Pending" until we build an admin approval system
           verification: "Pending",
@@ -79,6 +81,10 @@ export default function FarmerProfilePage() {
           notifySms: user.notifySms !== undefined ? user.notifySms : false,
         }}
       />
+
+      {/* The map is now safely inside the main wrapper! */}
+      <ProfileLocationSettings />
+      
     </div>
   );
 }
