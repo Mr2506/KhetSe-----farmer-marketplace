@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { auth } from "@/lib/firebase"; 
+import { auth } from "@/lib/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from "firebase/auth";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { Leaf, ShoppingBag, Tractor, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 
 declare global {
@@ -13,7 +13,7 @@ declare global {
 }
 
 export default function LoginPage() {
-  const router = useRouter(); 
+  const router = useRouter();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
@@ -53,12 +53,12 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: formattedNumber })
       });
-      
+
       const checkData = await checkRes.json();
-      
+
       // If the backend says the user doesn't exist, stop immediately!
       if (!checkRes.ok || !checkData.exists) {
-         throw new Error("ACCOUNT_NOT_FOUND"); 
+        throw new Error("ACCOUNT_NOT_FOUND");
       }
 
       // 2. If they do exist, proceed with Firebase SMS
@@ -70,14 +70,14 @@ export default function LoginPage() {
       setConfirmationResult(confirmation);
       setStep(2);
       setMessage({ text: "OTP Sent successfully!", type: "success" });
-      
+
     } catch (error: any) {
       console.error(error);
       // Catch our custom error and show the exact message you wanted
       if (error.message === "ACCOUNT_NOT_FOUND") {
-         setMessage({ text: "Account not found. Please select a role below and click Create Account.", type: "error" });
+        setMessage({ text: "Account not found. Please select a role below and click Create Account.", type: "error" });
       } else {
-         setMessage({ text: "Error sending OTP: " + error.message, type: "error" });
+        setMessage({ text: "Error sending OTP: " + error.message, type: "error" });
       }
     } finally {
       setIsLoading(false);
@@ -88,7 +88,7 @@ export default function LoginPage() {
     e.preventDefault();
     setMessage(null);
     setIsLoading(true);
-    
+
     if (!confirmationResult) {
       setMessage({ text: "Please request OTP first", type: "error" });
       setIsLoading(false);
@@ -98,7 +98,7 @@ export default function LoginPage() {
     try {
       const result = await confirmationResult.confirm(otp);
       const firebaseToken = await result.user.getIdToken();
-      
+
       setMessage({ text: "Verifying with server...", type: "success" });
 
       const response = await fetch("http://localhost:5000/api/users/login", {
@@ -119,7 +119,7 @@ export default function LoginPage() {
       setMessage({ text: `Welcome back, ${data.firstName || 'User'}!`, type: "success" });
 
       setTimeout(() => {
-        if (data.role === "Admin") router.push("/admin"); 
+        if (data.role === "Admin") router.push("/admin");
         else if (data.role === "Farmer") router.push("/farmer");
         else router.push("/buyer");
       }, 1000);
@@ -208,11 +208,10 @@ export default function LoginPage() {
           </div>
 
           {message && (
-            <div className={`mb-6 flex items-start gap-3 rounded-2xl p-4 text-sm font-medium border ${
-              message.type === "error"
+            <div className={`mb-6 flex items-start gap-3 rounded-2xl p-4 text-sm font-medium border ${message.type === "error"
                 ? "bg-red-50 text-red-700 border-red-200/60"
                 : "bg-emerald-50 text-emerald-800 border-emerald-200/60"
-            }`}>
+              }`}>
               {message.type === "error"
                 ? <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-red-500" />
                 : <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-emerald-600" />
@@ -288,15 +287,13 @@ export default function LoginPage() {
                       key={role}
                       type="button"
                       onClick={() => setSelectedRole(role)}
-                      className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all duration-200 ${
-                        selectedRole === role
+                      className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-left transition-all duration-200 ${selectedRole === role
                           ? "border-emerald-500 bg-emerald-50 shadow-sm shadow-emerald-500/10"
                           : "border-zinc-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40"
-                      }`}
+                        }`}
                     >
-                      <div className={`grid h-10 w-10 place-items-center rounded-xl transition-colors ${
-                        selectedRole === role ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-500"
-                      }`}>
+                      <div className={`grid h-10 w-10 place-items-center rounded-xl transition-colors ${selectedRole === role ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-500"
+                        }`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="text-center">

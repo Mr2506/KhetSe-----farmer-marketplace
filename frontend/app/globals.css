@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -8,9 +8,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Plus Jakarta Sans', var(--font-inter), system-ui, sans-serif;
+  --font-sans: 'Inter', var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --font-heading: 'Plus Jakarta Sans', var(--font-inter), system-ui, sans-serif;
+  --font-heading: 'Inter', var(--font-inter), system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -55,6 +55,7 @@
   --ks-green-dark:   #1B5E20;
   --ks-green-light:  #F0FAF0;
   --ks-amber:        #F9A825;
+  --ks-amber-dark:   #B47A00; /* AA-compliant amber for text on light bg */
   --ks-amber-light:  #FFF8E1;
   --ks-bg:           #F7F8F5;
   --ks-text:         #1A1A1A;
@@ -140,6 +141,18 @@
   html {
     @apply font-sans;
   }
+
+  /* Global focus-visible ring for all interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid #2E7D32;
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
 }
 
 /* Custom animation utilities for hover menus and popovers */
@@ -185,10 +198,82 @@
     transform: translateY(-3px);
     box-shadow: 0 12px 32px rgba(0,0,0,0.10);
   }
+  .ks-card:focus-visible {
+    outline: 2px solid #2E7D32;
+    outline-offset: 2px;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.10);
+  }
 
   /* Focus ring system */
   .ks-focus:focus-visible {
     outline: 2px solid #2E7D32;
     outline-offset: 2px;
   }
-}
+
+  /* Product card skeleton loading animation */
+  .ks-skeleton {
+    background: linear-gradient(90deg, #F0F0F0 25%, #E0E0E0 50%, #F0F0F0 75%);
+    background-size: 200% 100%;
+    animation: ks-shimmer 1.5s ease-in-out infinite;
+    border-radius: 12px;
+  }
+
+  @keyframes ks-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Bottom sheet slide-up animation */
+  @keyframes ks-sheet-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  @keyframes ks-sheet-down {
+    from { transform: translateY(0); }
+    to   { transform: translateY(100%); }
+  }
+  .ks-sheet-enter {
+    animation: ks-sheet-up 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+  .ks-sheet-exit {
+    animation: ks-sheet-down 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+
+  /* Bottom sheet backdrop fade */
+  @keyframes ks-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes ks-fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+  .ks-backdrop-enter {
+    animation: ks-fade-in 0.2s ease-out forwards;
+  }
+  .ks-backdrop-exit {
+    animation: ks-fade-out 0.2s ease-out forwards;
+  }
+
+  /* Safe area padding for notched phones */
+  .ks-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Respect user motion preference globally */
+@media (prefers-reduced-motion: reduce) {
+  .ks-card:hover {
+    transform: none;
+  }
+  .ks-card:focus-visible {
+    transform: none;
+  }
+  .animate-pulse {
+    animation: none !important;
+  }
+  .ks-skeleton {
+    animation: none !important;
+  }
+}

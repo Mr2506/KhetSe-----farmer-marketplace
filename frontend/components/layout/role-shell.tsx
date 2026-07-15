@@ -3,14 +3,18 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  CalendarDays,
   ChevronDown,
   Leaf,
   LogOut,
   Menu,
+  Package,
+  RefreshCw,
+  ShoppingCart,
+  Sparkles,
+  Store,
   User,
   X,
-  Sparkles,
-  RefreshCw,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -24,6 +28,14 @@ type RoleShellProps = {
   children: React.ReactNode;
 };
 
+/* ── Buyer-specific bottom nav items ─────────────────────── */
+const buyerBottomNav = [
+  { href: "/buyer/browse", label: "Products", icon: Store },
+  { href: "/buyer/cart", label: "Cart", icon: ShoppingCart },
+  { href: "/buyer/orders", label: "My Orders", icon: Package },
+  { href: "/buyer/calendar", label: "Calendar", icon: CalendarDays },
+];
+
 export function RoleShell({ role, children }: RoleShellProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -33,6 +45,9 @@ export function RoleShell({ role, children }: RoleShellProps) {
   const [userName, setUserName] = useState("User");
   const [userPhone, setUserPhone] = useState("");
   const [userRoles, setUserRoles] = useState<AppRole[]>([role]); 
+
+  // Cart badge count (reads from localStorage, listens for updates)
+  const [cartCount, setCartCount] = useState(0);
 
   // ADDED THIS: Fetch the real profile on load!
   useEffect(() => {
@@ -57,6 +72,32 @@ export function RoleShell({ role, children }: RoleShellProps) {
     };
 
     fetchProfile();
+  }, []);
+
+  // Cart count listener — reads localStorage and listens for the cartUpdated event
+  useEffect(() => {
+    const readCart = () => {
+      try {
+        const saved = localStorage.getItem("khetse_cart");
+        if (saved) {
+          const items = JSON.parse(saved);
+          setCartCount(Array.isArray(items) ? items.length : 0);
+        } else {
+          setCartCount(0);
+        }
+      } catch {
+        setCartCount(0);
+      }
+    };
+
+    readCart(); // initial read
+
+    window.addEventListener("cartUpdated", readCart);
+    window.addEventListener("storage", readCart);
+    return () => {
+      window.removeEventListener("cartUpdated", readCart);
+      window.removeEventListener("storage", readCart);
+    };
   }, []);
 
   const links = navByRole[role].filter(
@@ -95,6 +136,9 @@ export function RoleShell({ role, children }: RoleShellProps) {
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
+  // Whether to use the buyer-specific bottom nav
+  const isBuyer = role === "BUYER";
 
   return (
     <div className="min-h-screen bg-[#F7F8F5] text-[#1A1A1A] font-sans">
@@ -167,6 +211,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
 
         {/* ── Mobile Top Header ───────────────────────────── */}
         <header className="flex items-center justify-between border-b border-[#E5E7EB] bg-white px-4 py-3 sticky top-0 z-40 lg:hidden shadow-sm">
+          {/* Left: Logo + Brand */}
           <Link href={ROLE_HOME[role]} className="flex items-center gap-2">
             <div className="grid h-9 w-9 place-items-center rounded-xl bg-[#2E7D32] text-white shadow-sm">
               <Leaf className="h-5 w-5" />
@@ -179,80 +224,62 @@ export function RoleShell({ role, children }: RoleShellProps) {
             </div>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <Link
-              href={profileHref}
-              className="flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3 py-1.5 text-xs font-bold text-[#1A1A1A] hover:border-[#2E7D32] hover:text-[#2E7D32] transition-colors duration-150"
-            >
-              <div className="grid h-5 w-5 place-items-center rounded-full bg-[#2E7D32] text-white text-[9px] font-black">
-                {initials}
-              </div>
-              Profile
-            </Link>
-
+          {/* Right: Minimal profile avatar (dropdown on tap) */}
+          <div className="group relative">
             <button
               type="button"
-              onClick={() => setMobileOpen((v) => !v)}
-              className="rounded-xl border border-[#E5E7EB] p-2 text-[#6B7280] hover:bg-[#F7F8F5] active:scale-95 transition-all duration-150"
+              className="grid h-9 w-9 place-items-center rounded-full bg-[#2E7D32] text-white text-xs font-black shadow-sm ring-2 ring-[#2E7D32]/20 ring-offset-1 transition-transform duration-150 active:scale-95"
+              aria-label="Profile menu"
             >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {initials}
             </button>
-          </div>
-        </header>
 
-        {/* Mobile expanded menu */}
-        {mobileOpen && (
-          <div className="border-b border-[#E5E7EB] bg-white px-4 py-4 lg:hidden animate-in slide-in-from-top-2 duration-200">
-            <nav className="flex flex-col gap-1">
-              {links.map((link) => {
-                const Icon = link.icon;
-                const active = pathname === link.href;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-[8px] px-3.5 py-2.5 text-sm font-semibold transition-colors duration-150",
-                      active ? "bg-[#2E7D32] text-white" : "text-[#6B7280] hover:bg-[#F0FAF0] hover:text-[#2E7D32]"
-                    )}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </nav>
+            {/* Mobile profile dropdown */}
+            <div className="nav-popover-hover absolute right-0 top-full mt-2 w-56 rounded-2xl border border-[#E5E7EB] bg-white p-2.5 shadow-2xl shadow-black/10 z-50">
+              <div className="rounded-xl bg-[#F0FAF0] p-3 border border-[#2E7D32]/10 mb-2">
+                <p className="text-xs font-bold text-[#1B5E20]">{userName}</p>
+                {userPhone && (
+                  <p className="text-[11px] text-[#2E7D32]/80 truncate mt-0.5">+91 {userPhone}</p>
+                )}
+              </div>
 
-            {otherRoles.length > 0 && (
-              <div className="mt-4 border-t border-[#E5E7EB] pt-3">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">Switch Role</p>
-                <div className="flex flex-wrap gap-2">
+              <Link
+                href={profileHref}
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#6B7280] transition-colors duration-150 hover:bg-[#F0FAF0] hover:text-[#2E7D32]"
+              >
+                <User className="h-4 w-4 text-[#2E7D32]" />
+                View Profile
+              </Link>
+
+              {otherRoles.length > 0 && (
+                <div className="my-1.5 border-t border-[#E5E7EB] pt-1.5">
                   {otherRoles.map((r) => (
                     <button
                       key={r}
                       type="button"
                       onClick={() => switchRole(r)}
-                      className="flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-[#F7F8F5] px-3 py-1.5 text-xs font-semibold text-[#1A1A1A] hover:border-[#2E7D32] hover:text-[#2E7D32] transition-colors duration-150"
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#6B7280] transition-all duration-150 hover:bg-[#F0FAF0] hover:text-[#2E7D32]"
                     >
-                      <RefreshCw className="h-3 w-3" />
-                      {ROLE_LABELS[r]}
+                      <RefreshCw className="h-3.5 w-3.5 text-[#2E7D32]" />
+                      Switch to {ROLE_LABELS[r]}
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            <button
-              type="button"
-              onClick={handleSignOut}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-bold text-red-600 hover:bg-red-100 transition-colors duration-150"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign out
-            </button>
+              <div className="border-t border-[#E5E7EB] pt-1.5 mt-1">
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 transition-colors duration-150 hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4 text-red-500" />
+                  Sign Out
+                </button>
+              </div>
+            </div>
           </div>
-        )}
+        </header>
 
         {/* ── Main Content + Top Desktop Header ───────────── */}
         <main className="flex min-w-0 flex-1 flex-col">
@@ -359,39 +386,82 @@ export function RoleShell({ role, children }: RoleShellProps) {
       </div>
 
       {/* ── Mobile Bottom Nav ────────────────────────────── */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E5E7EB] bg-white lg:hidden shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
-        <div className="mx-auto flex max-w-lg justify-around px-2 py-2">
-          {links.slice(0, 4).map((link) => {
-            const Icon = link.icon;
-            const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
-            return (
+      <nav
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-[#E5E7EB] bg-white lg:hidden shadow-[0_-2px_12px_rgba(0,0,0,0.06)] ks-safe-bottom"
+        role="navigation"
+        aria-label="Mobile navigation"
+      >
+        <div className="mx-auto flex max-w-lg justify-around px-1 py-1">
+          {isBuyer ? (
+            /* ── Buyer-specific 4-item bottom nav ── */
+            buyerBottomNav.map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const isCart = item.href === "/buyer/cart";
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "relative flex flex-col items-center justify-center gap-0.5 rounded-xl px-3 min-w-[56px] min-h-[44px] py-1.5 text-[11px] font-bold transition-all duration-200",
+                    active
+                      ? "text-[#2E7D32] bg-[#F0FAF0]"
+                      : "text-[#9CA3AF] hover:text-[#1A1A1A] active:bg-[#F7F8F5]"
+                  )}
+                >
+                  <span className="relative">
+                    <Icon className={cn("h-5 w-5 transition-colors duration-200", active ? "text-[#2E7D32]" : "text-[#9CA3AF]")} />
+                    {/* Cart badge */}
+                    {isCart && cartCount > 0 && (
+                      <span className="absolute -top-1.5 -right-2 grid h-4 min-w-[16px] place-items-center rounded-full bg-[#EF9F27] px-1 text-[9px] font-black text-white leading-none shadow-sm">
+                        {cartCount > 9 ? "9+" : cartCount}
+                      </span>
+                    )}
+                  </span>
+                  <span className="leading-tight">{item.label.split(" ")[0]}</span>
+                  {/* Active indicator dot */}
+                  {active && (
+                    <span className="absolute -bottom-0.5 h-[3px] w-5 rounded-full bg-[#2E7D32]" />
+                  )}
+                </Link>
+              );
+            })
+          ) : (
+            /* ── Generic bottom nav for Farmer/Admin ── */
+            <>
+              {links.slice(0, 4).map((link) => {
+                const Icon = link.icon;
+                const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "flex flex-col items-center gap-0.5 rounded-xl px-3 min-h-[44px] py-1.5 text-[11px] font-bold transition-all duration-200",
+                      active ? "text-[#2E7D32] bg-[#F0FAF0]" : "text-[#9CA3AF] hover:text-[#1A1A1A]"
+                    )}
+                  >
+                    <Icon className={cn("h-5 w-5", active ? "text-[#2E7D32]" : "text-[#9CA3AF]")} />
+                    {link.label.split(" ")[0]}
+                  </Link>
+                );
+              })}
+
               <Link
-                key={link.href}
-                href={link.href}
+                href={profileHref}
                 className={cn(
-                  "flex flex-col items-center gap-1 rounded-xl px-3 py-1.5 text-[11px] font-bold transition-all duration-150",
-                  active ? "text-[#2E7D32] bg-[#F0FAF0]" : "text-[#9CA3AF] hover:text-[#1A1A1A]"
+                  "flex flex-col items-center gap-0.5 rounded-xl px-3 min-h-[44px] py-1.5 text-[11px] font-bold transition-all duration-200",
+                  pathname === profileHref ? "text-[#2E7D32] bg-[#F0FAF0]" : "text-[#9CA3AF] hover:text-[#1A1A1A]"
                 )}
               >
-                <Icon className={cn("h-5 w-5", active ? "text-[#2E7D32]" : "text-[#9CA3AF]")} />
-                {link.label.split(" ")[0]}
+                <User className={cn("h-5 w-5", pathname === profileHref ? "text-[#2E7D32]" : "text-[#9CA3AF]")} />
+                Profile
               </Link>
-            );
-          })}
-
-          <Link
-            href={profileHref}
-            className={cn(
-              "flex flex-col items-center gap-1 rounded-xl px-3 py-1.5 text-[11px] font-bold transition-all duration-150",
-              pathname === profileHref ? "text-[#2E7D32] bg-[#F0FAF0]" : "text-[#9CA3AF] hover:text-[#1A1A1A]"
-            )}
-          >
-            <User className={cn("h-5 w-5", pathname === profileHref ? "text-[#2E7D32]" : "text-[#9CA3AF]")} />
-            Profile
-          </Link>
+            </>
+          )}
         </div>
       </nav>
       <div className="h-16 lg:hidden" />
     </div>
   );
-}
+}
