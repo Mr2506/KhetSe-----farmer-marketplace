@@ -420,36 +420,40 @@ export default function FarmerCalendarPage() {
           </div>
         </div>
 
-        {/* ──── Seasonal Produce List ─────── */}
+{/* ──── Seasonal Produce List ─────── */}
         <div className="space-y-5">
           <div className="flex flex-wrap items-center gap-2">
             {(
               [
-                { key: "all", label: "All", count: seasonData.items.length },
+                { key: "all", label: "All", count: seasonData.items.length, icon: null },
                 { key: "fruit", label: "Fruits", count: fruitsCount, icon: Apple },
                 { key: "vegetable", label: "Vegetables", count: veggiesCount, icon: Carrot },
-              ] as const
-            ).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setFilter(tab.key)}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-all
-                  ${
-                    filter === tab.key
-                      ? "bg-emerald-600 text-white shadow-sm shadow-emerald-600/20"
-                      : "bg-white text-zinc-600 border border-zinc-200 hover:border-emerald-300 hover:text-emerald-700"
-                  }
-                `}
-              >
-                {tab.icon && <tab.icon className="h-3.5 w-3.5" />}
-                {tab.label}
-                <span
-                  className={`ml-0.5 text-xs ${filter === tab.key ? "text-white/70" : "text-zinc-400"}`}
+              ]
+            ).map((tab) => {
+              const Icon = tab.icon; // Capitalized for React
+
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key as "all" | "fruit" | "vegetable")}
+                  className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-all
+                    ${
+                      filter === tab.key
+                        ? "bg-emerald-600 text-white shadow-sm shadow-emerald-600/20"
+                        : "bg-white text-zinc-600 border border-zinc-200 hover:border-emerald-300 hover:text-emerald-700"
+                    }
+                  `}
                 >
-                  ({tab.count})
-                </span>
-              </button>
-            ))}
+                  {Icon && <Icon className="h-3.5 w-3.5" />}
+                  {tab.label}
+                  <span
+                    className={`ml-0.5 text-xs ${filter === tab.key ? "text-white/70" : "text-zinc-400"}`}
+                  >
+                    ({tab.count})
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">

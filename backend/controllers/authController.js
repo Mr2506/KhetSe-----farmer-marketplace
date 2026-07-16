@@ -28,7 +28,7 @@ const generateToken = (id) => {
 // @route   POST /api/users/register
 const registerUser = async (req, res) => {
   try {
-    const { firebaseToken, firstName, lastName, role, farmVillageName, district, pincode, farmSize, cropsGrown, cityArea, buyingFor } = req.body;
+    const { firebaseToken, firstName, lastName, role, farmVillageName, district, pincode, farmSize, cropsGrown, cityArea, buyingFor, buyerType } = req.body;
 
     if (!firebaseToken) return res.status(400).json({ message: 'Firebase token is required' });
 
@@ -51,7 +51,9 @@ const registerUser = async (req, res) => {
 
     // 3. Create User in MongoDB
     const user = await User.create({
-      firstName, lastName, phone, role: assignedRole, farmVillageName, district, pincode, farmSize, cropsGrown, cityArea, buyingFor
+      firstName, lastName, phone, role: assignedRole, farmVillageName, district, pincode, farmSize, cropsGrown, cityArea, buyingFor,
+      //MAGIC FALLBACK: If buyerType is empty, check buyingFor!
+      buyerType: buyerType || buyingFor || 'Household'    
     });
 
     if (user) {
@@ -159,6 +161,12 @@ const updateUserProfile = async (req, res) => {
       user.buyingFor = req.body.buyingFor || user.buyingFor;
       user.cityArea = req.body.cityArea || user.cityArea;
       
+      //THE BUYER TYPE FIX
+      if (req.body.buyerType) user.buyerType = req.body.buyerType;
+      if (req.body.buyingFor && ['Household', 'Restaurant', 'Shop'].includes(req.body.buyingFor)) {
+          user.buyerType = req.body.buyingFor;
+      }
+
       // FARMER FIELDS (Added these 3 lines!)
       if (req.body.farmVillageName !== undefined) user.farmVillageName = req.body.farmVillageName;
       if (req.body.farmSize !== undefined) user.farmSize = req.body.farmSize;

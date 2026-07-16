@@ -1,5 +1,15 @@
 const mongoose = require('mongoose');
 
+const reviewSchema = mongoose.Schema(
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+    name: { type: String, required: true },
+    rating: { type: Number, required: true },
+    comment: { type: String, required: false },
+  },
+  { timestamps: true }
+);
+
 const produceSchema = mongoose.Schema(
   {
     farmer: {
@@ -56,10 +66,12 @@ const produceSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    numReviews: {
+  numReviews: {
       type: Number,
       default: 0,
-    }
+    },
+    // NEW: This tells the crop to hold a list of text reviews!
+    reviews: [reviewSchema],
   },
   {
     timestamps: true,

@@ -20,6 +20,12 @@ const userSchema = mongoose.Schema(
       required: [true, 'Please select a role'],
       enum: ['Buyer', 'Farmer', 'Admin'], // <-- ADDED 'Admin' HERE!
     },
+    buyerType: {
+    type: String,
+    enum: ['Household', 'Restaurant', 'Shop'],
+    // If they don't specify, we assume it is just a normal person buying for their home
+    default: 'Household', 
+  },
     cityArea: {
       type: String,
     },

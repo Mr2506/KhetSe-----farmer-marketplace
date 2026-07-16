@@ -11,6 +11,7 @@ import {
   Tractor,
   User,
   Users,
+  Star
 } from "lucide-react";
 
 export type NavItem = {
@@ -33,6 +34,7 @@ export const farmerNav: NavItem[] = [
   { href: "/farmer/orders", label: "Orders", icon: Package },
   { href: "/farmer/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/farmer/profile", label: "Profile", icon: User },
+  { href: "/farmer/reviews", label: "Reviews", icon: Star },
 ];
 
 export const adminNav: NavItem[] = [

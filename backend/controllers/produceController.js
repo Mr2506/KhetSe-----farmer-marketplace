@@ -101,4 +101,48 @@ const getProduceById = async (req, res) => {
   }
 };
 
-module.exports = { getProduce, getFarmerProduce, addProduce, updateProduce, deleteProduce, getProduceById };
+const createProduceReview = async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const produceId = req.params.id;
+
+    const produce = await Produce.findById(produceId);
+
+    if (!produce) {
+      return res.status(404).json({ message: 'Produce not found' });
+    }
+
+    // 🛡️ THE ANTI-SPAM SHIELD 🛡️
+    // Look through the existing reviews to see if this user's ID is already there
+    const alreadyReviewed = produce.reviews.find(
+      (review) => review.user.toString() === req.user._id.toString()
+    );
+
+    if (alreadyReviewed) {
+      return res.status(400).json({ message: 'You have already reviewed this crop!' });
+    }
+
+    // 1. Package the new review
+    const review = {
+      user: req.user._id, 
+      name: `${req.user.firstName} ${req.user.lastName}`,
+      rating: Number(rating),
+      comment: comment || "", 
+    };
+
+    // 2. Push it into the crop's new reviews array
+    produce.reviews.push(review);
+
+    // 3. Recalculate the exact math automatically based on the array
+    produce.numReviews = produce.reviews.length;
+    produce.rating = produce.reviews.reduce((acc, item) => item.rating + acc, 0) / produce.reviews.length;
+
+    await produce.save();
+    res.status(201).json({ message: 'Review added successfully' });
+  } catch (error) {
+    console.error("Review Error:", error);
+    res.status(500).json({ message: 'Server Error while submitting review' });
+  }
+};
+
+module.exports = { getProduce, getFarmerProduce, addProduce, updateProduce, deleteProduce, getProduceById, createProduceReview  };

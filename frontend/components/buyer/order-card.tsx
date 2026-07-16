@@ -1,10 +1,10 @@
 "use client";
 
-import { MapPin, Phone, Package, ChevronRight } from "lucide-react";
+import { MapPin, Phone, Package, Star } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  Confirmed: { bg: "bg-blue-50",   text: "text-blue-700",  dot: "bg-blue-500" }, // Added to match backend!
+  Confirmed: { bg: "bg-blue-50",   text: "text-blue-700",  dot: "bg-blue-500" },
   Placed:    { bg: "bg-blue-50",   text: "text-blue-700",  dot: "bg-blue-500" },
   Accepted:  { bg: "bg-amber-50",  text: "text-amber-700", dot: "bg-amber-500" },
   Packed:    { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500" },
@@ -13,24 +13,29 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> =
   Cancelled: { bg: "bg-red-50",    text: "text-red-700",   dot: "bg-red-500" },
 };
 
-export function BuyerOrderCard({ order }: { order: any }) {
+// NEW: Added onRate prop to receive the function from the parent page
+export function BuyerOrderCard({ order, onRate }: { order: any, onRate?: (produceId: string, cropName: string) => void }) {
   const dateStr = order.createdAt ? formatDate(order.createdAt) : "Recently";
   const style = STATUS_STYLES[order.status] ?? { bg: "bg-zinc-100", text: "text-zinc-600", dot: "bg-zinc-400" };
 
   return (
     <div className="group overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
-      {/* Header bar */}
+     {/* Header bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/60 px-5 py-3.5">
         <div className="flex items-center gap-2">
           <Package className="h-3.5 w-3.5 text-zinc-400" />
-          <p className="text-xs font-medium text-zinc-500">Ordered {dateStr}</p>
+          <p className="text-xs font-medium text-zinc-500">
+            Ordered {dateStr} 
+            <span className="mx-1.5 text-zinc-300">|</span> 
+            <span className="font-mono text-zinc-400">#{order._id?.slice(-8).toUpperCase()}</span>
+          </p>
         </div>
         <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ${style.bg} ${style.text}`}>
           <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
           {order.status}
         </span>
       </div>
-
+      
       {/* Body */}
       <div className="p-5 sm:flex sm:items-center sm:justify-between sm:gap-6">
         <div className="flex-1 min-w-0">
@@ -40,6 +45,7 @@ export function BuyerOrderCard({ order }: { order: any }) {
           <h3 className="text-lg font-bold text-zinc-900 truncate">
             {order.produceItem?.name || "Deleted Item"}
           </h3>
+          
           <div className="mt-2.5 flex flex-wrap items-center gap-4">
             <div className="flex items-baseline gap-1">
               <span className="text-xs text-zinc-400">Qty</span>
@@ -55,6 +61,18 @@ export function BuyerOrderCard({ order }: { order: any }) {
               </span>
             </div>
           </div>
+
+          {/* INJECTED: The Rating Button (Only shows if Delivered and if we have the produce ID) */}
+          {(order.status === "Delivered" || order.status === "Placed" || order.status === "Confirmed") && order.produceItem?._id && onRate && (
+            <button
+              onClick={() => onRate(order.produceItem._id, order.produceItem.name)}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700 shadow-sm hover:border-amber-300 hover:bg-amber-100 transition-colors"
+            >
+              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
+              Rate this Crop
+            </button>
+          )}
+
         </div>
 
         {/* Farmer contact */}

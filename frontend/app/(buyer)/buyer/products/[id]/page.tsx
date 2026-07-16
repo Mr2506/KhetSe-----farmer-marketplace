@@ -2,10 +2,11 @@ import { notFound } from "next/navigation";
 import { AddToCartPanel } from "@/components/buyer/add-to-cart-panel";
 import { BackButton } from "@/components/buyer/back-button";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { Star } from "lucide-react";
+import { Star, MessageSquare } from "lucide-react";
 
 /** Capitalize first letter of each word for display */
 function titleCase(str: string): string {
+  if (!str) return "";
   return str
     .toLowerCase()
     .replace(/\b\w/g, (c) => c.toUpperCase());
@@ -36,6 +37,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     }
   }
 
+  // Map the data, including our new reviews array!
   const listing = {
     id: item._id,
     cropName: item.name,
@@ -48,14 +50,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     photos: item.photos || [],
     description: item.description || "No description provided by the farmer.",
     farmerName: item.farmer ? `${item.farmer.firstName} ${item.farmer.lastName}` : "Unknown Farmer",
-
-    // GPS coordinates from the backend
     farmerLocation: item.farmer?.location || null,
-
     village: item.farmer?.farmVillageName || "Local Farm",
     rating: item.rating || 0,
     numReviews: item.numReviews || 0,
     distance: Math.floor(Math.random() * 14) + 2,
+    
+    // NEW: Pulling the actual text reviews from the backend
+    reviews: item.reviews || [], 
   };
 
   const displayName = titleCase(listing.cropName);
@@ -64,8 +66,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const savings = mandi > 0 ? Math.round(((mandi - listing.price) / mandi) * 100) : 0;
 
   return (
-    <article>
-      {/* Back navigation */}
+    <article className="pb-12 animate-in fade-in duration-300">
       <BackButton />
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -74,7 +75,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <div className="grid grid-cols-2 gap-3">
             {listing.photos.map((photo: string, i: number) => {
               const isImage = typeof photo === 'string' && photo.startsWith("http");
-
               return (
                 <div
                   key={i}
@@ -92,7 +92,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
               );
             })}
-
             {listing.photos.length === 0 && (
               <div className="flex aspect-square items-center justify-center rounded-xl bg-gradient-to-br from-[#F0FAF0] to-[#FFF8E1] text-6xl border border-[#E5E7EB]" aria-hidden="true">
                 🌾
@@ -109,7 +108,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <p className="mt-2 text-sm text-[#6B7280] leading-relaxed">{listing.description}</p>
           </div>
 
-          {/* Pricing card */}
           <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 shadow-sm">
             <div className="flex items-end gap-4">
               <div>
@@ -130,7 +128,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </p>
           </div>
 
-          {/* Farmer card */}
           <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">Grown by</p>
             <p className="mt-1 text-lg font-bold text-[#1A1A1A]">{displayFarmer}</p>
@@ -160,7 +157,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </p>
           </div>
 
-          {/* Add to cart */}
           <AddToCartPanel
             listingId={listing.id}
             maxQty={listing.quantity}
@@ -172,6 +168,69 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             farmerLocation={listing.farmerLocation}
           />
         </div>
+      </div>
+
+      {/* ==========================================
+          NEW: CUSTOMER REVIEWS SECTION
+          ========================================== */}
+      <div className="mt-12 border-t border-zinc-200 pt-10">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-100 text-amber-600">
+            <MessageSquare className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-zinc-900 tracking-tight">Customer Reviews</h2>
+            <p className="text-sm text-zinc-500">Real feedback from local buyers</p>
+          </div>
+        </div>
+
+        {listing.reviews.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center text-zinc-500">
+            <p>No reviews yet. Purchase this crop to be the first to leave feedback!</p>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {listing.reviews.map((review: any, idx: number) => (
+              <div key={idx} className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
+                
+                <div>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="grid h-10 w-10 place-items-center rounded-full bg-emerald-100 text-emerald-700 font-bold uppercase shadow-inner">
+                        {review.name ? review.name.charAt(0) : "U"}
+                      </div>
+                      <div>
+                        <p className="font-bold text-zinc-900 text-sm">{titleCase(review.name || "Unknown Buyer")}</p>
+                        <p className="text-xs font-medium text-zinc-400">{formatDate(review.createdAt || new Date().toISOString())}</p>
+                      </div>
+                    </div>
+                    {/* The specific stars given by THIS user */}
+                    <div className="flex items-center gap-0.5 bg-amber-50 px-2 py-1 rounded-full border border-amber-100">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-3 w-3 ${
+                            star <= review.rating ? "fill-amber-400 text-amber-400" : "fill-zinc-200 text-zinc-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* The actual text comment */}
+                  {review.comment ? (
+                    <p className="text-sm text-zinc-700 leading-relaxed bg-zinc-50 p-3 rounded-xl border border-zinc-100 italic">
+                      "{review.comment}"
+                    </p>
+                  ) : (
+                    <p className="text-sm text-zinc-400 italic">Left a {review.rating}-star rating without a comment.</p>
+                  )}
+                </div>
+                
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </article>
   );

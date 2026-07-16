@@ -49,6 +49,7 @@ export function BuyerProfileForm({ defaultValues }: Props) {
           firstName: form.firstName,
           lastName: form.lastName,
           buyingFor,
+          buyerType: form.buyerType === "RESTAURANT" ? "Restaurant" : form.buyerType === "SHOP" ? "Shop" : "Household",
           cityArea: form.addresses[0] || "",
           notifyNewOrders: form.notifyNewOrders,
           notifyLowStock: form.notifyLowStock,
