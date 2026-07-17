@@ -6,7 +6,14 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:3000", 
+    "https://khetse-farmer-marketplace-six.vercel.app"
+  ],
+  credentials: true, // This is crucial for authentication tokens/OTP to work!
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+}));
 app.use(express.json());
 
 // Basic Test Route
