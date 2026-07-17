@@ -29,8 +29,8 @@ const roleMeta: Record<
 };
 
 export default function RoleSelectPage() {
-  const { data: session } = useSession();
-  const router = useRouter();
+  const sessionContext = useSession();
+  const session = sessionContext?.data;  const router = useRouter();
   const [loading, setLoading] = useState<AppRole | null>(null);
 
   const roles = (session?.user as any)?.roles ?? [];
