@@ -15,7 +15,7 @@ export default function AdminBuyersPage() {
         const token = localStorage.getItem("khetse_token");
         if (!token) return;
 
-        const res = await fetch("http://localhost:5000/api/admin/buyers", {
+        const res = await fetch("https://khetse-backend.onrender.com/api/admin/buyers", {
           headers: { Authorization: `Bearer ${token}` }
         });
 

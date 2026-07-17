@@ -24,8 +24,8 @@ export default function AdminDashboardPage() {
 
         // Fetch Stats and Orders from our Express Backend simultaneously
         const [statsRes, ordersRes] = await Promise.all([
-          fetch("http://localhost:5000/api/admin/stats", { headers: { Authorization: `Bearer ${token}` } }),
-          fetch("http://localhost:5000/api/admin/orders", { headers: { Authorization: `Bearer ${token}` } })
+          fetch("https://khetse-backend.onrender.com/api/admin/stats", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch("https://khetse-backend.onrender.com/api/admin/orders", { headers: { Authorization: `Bearer ${token}` } })
         ]);
 
         if (statsRes.ok && ordersRes.ok) {

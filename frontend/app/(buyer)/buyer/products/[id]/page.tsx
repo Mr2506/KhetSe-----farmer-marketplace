@@ -17,7 +17,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   let item = null;
 
   try {
-    const res = await fetch(`http://localhost:5000/api/produce/${id}`, {
+    const res = await fetch(`https://khetse-backend.onrender.com/api/produce/${id}`, {
       cache: "no-store",
     });
     if (res.ok) {

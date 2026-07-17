@@ -99,7 +99,7 @@ export default function FarmerSignup() {
       setMessage({ text: "Account Verified! Creating your profile...", type: "success" });
 
       // 2. Send all data to Node.js Backend
-      const response = await fetch("http://localhost:5000/api/users/register", {
+      const response = await fetch("https://khetse-backend.onrender.com/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -22,7 +22,7 @@ export default function FarmerReviewsPage() {
 
         // Fetching the farmer's own crops 
         // (Update this URL if your specific route for "my crops" is named differently)
-        const response = await fetch("http://localhost:5000/api/produce/farmer/my-produce", {
+        const response = await fetch("https://khetse-backend.onrender.com/api/produce/farmer/my-produce", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

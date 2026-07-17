@@ -13,7 +13,7 @@ export default function FarmerListingsPage() {
     try {
       const token = localStorage.getItem("khetse_token");
       if (!token) return;
-      const response = await fetch("http://localhost:5000/api/produce/mylistings", {
+      const response = await fetch("https://khetse-backend.onrender.com/api/produce/mylistings", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();

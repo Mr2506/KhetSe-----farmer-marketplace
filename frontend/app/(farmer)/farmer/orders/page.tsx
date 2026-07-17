@@ -22,7 +22,7 @@ export default function FarmerOrdersPage() {
         return;
       }
       
-      const response = await fetch("http://localhost:5000/api/orders/sales", {
+      const response = await fetch("https://khetse-backend.onrender.com/api/orders/sales", {
         headers: { Authorization: `Bearer ${token}` },
       });
       

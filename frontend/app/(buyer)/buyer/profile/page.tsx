@@ -15,7 +15,7 @@ export default function BuyerProfilePage() {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:5000/api/users/profile", {
+        const res = await fetch("https://khetse-backend.onrender.com/api/users/profile", {
           headers: { Authorization: `Bearer ${token}` }
         });
         

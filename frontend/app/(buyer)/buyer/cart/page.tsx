@@ -39,7 +39,7 @@ export default function CartPage() {
 
       setIsCalculatingLocation(true);
       try {
-        const profileRes = await fetch("http://localhost:5000/api/users/profile", {
+        const profileRes = await fetch("https://khetse-backend.onrender.com/api/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -100,7 +100,7 @@ export default function CartPage() {
 
         const realFarmerCoords = farmerItem.farmerLocation;
 
-        const res = await fetch("http://localhost:5000/api/map/route", {
+        const res = await fetch("https://khetse-backend.onrender.com/api/map/route", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -181,7 +181,7 @@ export default function CartPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/orders/bulk", {
+      const res = await fetch("https://khetse-backend.onrender.com/api/orders/bulk", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

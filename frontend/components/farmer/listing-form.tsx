@@ -65,7 +65,7 @@ export function ListingForm({
       for (const file of files) {
         const formData = new FormData();
         formData.append("image", file);
-        const res = await fetch("http://localhost:5000/api/upload", { method: "POST", body: formData });
+        const res = await fetch("https://khetse-backend.onrender.com/api/upload", { method: "POST", body: formData });
         const data = await res.json();
         if (res.ok) newPhotoUrls.push(data.imageUrl);
         else toast.error(data.message || "Failed to upload an image");
@@ -87,7 +87,7 @@ export function ListingForm({
       const token = localStorage.getItem("khetse_token");
       if (!token) throw new Error("You must be logged in to post a listing.");
 
-      const url = initial ? `http://localhost:5000/api/produce/${initial.id}` : `http://localhost:5000/api/produce`;
+      const url = initial ? `https://khetse-backend.onrender.com/api/produce/${initial.id}` : `https://khetse-backend.onrender.com/api/produce`;
       const method = initial ? "PUT" : "POST";
 
       const payload = {

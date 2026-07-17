@@ -73,7 +73,7 @@ export default function LocationPicker({ onLocationSelect }: { onLocationSelect:
       setIsLoading(true); 
 
       const token = localStorage.getItem("khetse_token");
-      const url = `http://localhost:5000/api/map/search?q=${encodeURIComponent(searchQuery)}`;
+      const url = `https://khetse-backend.onrender.com/api/map/search?q=${encodeURIComponent(searchQuery)}`;
       
       const res = await fetch(url, {
         method: "GET",

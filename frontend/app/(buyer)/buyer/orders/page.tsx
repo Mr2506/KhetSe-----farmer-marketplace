@@ -32,7 +32,7 @@ export default function BuyerOrdersPage() {
           setLoading(false);
           return;
         }
-        const response = await fetch("http://localhost:5000/api/orders/myorders", {
+        const response = await fetch("https://khetse-backend.onrender.com/api/orders/myorders", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error("Failed to fetch orders");
@@ -68,7 +68,7 @@ export default function BuyerOrdersPage() {
     setSubmittingReview(true);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/produce/${selectedProduce?.id}/reviews`, {
+      const res = await fetch(`https://khetse-backend.onrender.com/api/produce/${selectedProduce?.id}/reviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -22,7 +22,7 @@ export default async function BuyerBrowsePage({
 
   let allProduce: any[] = [];
   try {
-    const res = await fetch("http://localhost:5000/api/produce", { cache: "no-store" });
+    const res = await fetch("https://khetse-backend.onrender.com/api/produce", { cache: "no-store" });
     if (res.ok) allProduce = await res.json();
   } catch (error) {
     console.error("Failed to fetch produce:", error);

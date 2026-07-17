@@ -17,7 +17,7 @@ export default function ProfileLocationSettings() {
         const token = localStorage.getItem("khetse_token");
         if (!token) return;
 
-        const res = await fetch("http://localhost:5000/api/users/profile", {
+        const res = await fetch("https://khetse-backend.onrender.com/api/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -45,7 +45,7 @@ export default function ProfileLocationSettings() {
     setIsSaving(true);
     try {
       const token = localStorage.getItem("khetse_token");
-      const res = await fetch("http://localhost:5000/api/users/location", {
+      const res = await fetch("https://khetse-backend.onrender.com/api/users/location", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

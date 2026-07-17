@@ -51,7 +51,7 @@ export function FarmerListingRow({ listing, onRefresh }: { listing: Listing; onR
     try {
       const token = localStorage.getItem("khetse_token");
       const updateData = field === "price" ? { pricePerUnit: price } : { quantityAvailable: qty };
-      const res = await fetch(`http://localhost:5000/api/produce/${listing._id}`, {
+      const res = await fetch(`https://khetse-backend.onrender.com/api/produce/${listing._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(updateData),
@@ -71,7 +71,7 @@ export function FarmerListingRow({ listing, onRefresh }: { listing: Listing; onR
     setMenuOpen(false);
     try {
       const token = localStorage.getItem("khetse_token");
-      const res = await fetch(`http://localhost:5000/api/produce/${listing._id}`, {
+      const res = await fetch(`https://khetse-backend.onrender.com/api/produce/${listing._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ isAvailable: !listing.isAvailable }),
@@ -92,7 +92,7 @@ export function FarmerListingRow({ listing, onRefresh }: { listing: Listing; onR
     setMenuOpen(false);
     try {
       const token = localStorage.getItem("khetse_token");
-      const res = await fetch(`http://localhost:5000/api/produce/${listing._id}`, {
+      const res = await fetch(`https://khetse-backend.onrender.com/api/produce/${listing._id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

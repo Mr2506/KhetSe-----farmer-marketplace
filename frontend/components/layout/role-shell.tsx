@@ -56,7 +56,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:5000/api/users/profile", {
+        const res = await fetch("https://khetse-backend.onrender.com/api/users/profile", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -464,4 +464,4 @@ export function RoleShell({ role, children }: RoleShellProps) {
       <div className="h-16 lg:hidden" />
     </div>
   );
-}
+}

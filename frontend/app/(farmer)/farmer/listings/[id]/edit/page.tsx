@@ -13,7 +13,7 @@ export default function EditListingPage() {
     const fetchListing = async () => {
       try {
         // Fetch the specific crop from your new Node.js route!
-        const res = await fetch(`http://localhost:5000/api/produce/${params.id}`);
+        const res = await fetch(`https://khetse-backend.onrender.com/api/produce/${params.id}`);
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
         setListing(data);

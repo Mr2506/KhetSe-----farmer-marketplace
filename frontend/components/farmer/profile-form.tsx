@@ -38,7 +38,7 @@ export function FarmerProfileForm({ defaultValues }: Props) {
       const token = localStorage.getItem("khetse_token");
       if (!token) throw new Error("Not authenticated");
 
-      const res = await fetch("http://localhost:5000/api/users/profile", {
+      const res = await fetch("https://khetse-backend.onrender.com/api/users/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

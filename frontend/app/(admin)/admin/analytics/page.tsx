@@ -28,7 +28,7 @@ export default function AdminAnalyticsPage() {
         const token = localStorage.getItem("khetse_token");
         if (!token) return;
 
-        const res = await fetch("http://localhost:5000/api/admin/analytics", {
+        const res = await fetch("https://khetse-backend.onrender.com/api/admin/analytics", {
           headers: { Authorization: `Bearer ${token}` }
         });
 
