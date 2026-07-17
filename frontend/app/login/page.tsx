@@ -247,7 +247,6 @@ export default function LoginPage() {
                     />
                   </div>
                 </div>
-                <div id="recaptcha-container" />
                 <button
                   type="submit"
                   disabled={isLoading || phoneNumber.length < 10}
@@ -356,6 +355,7 @@ export default function LoginPage() {
               </form>
             </div>
           )}
+          <div id="recaptcha-container" className="fixed bottom-0 right-0"></div>
         </div>
       </div>
     </div>
