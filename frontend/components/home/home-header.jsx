@@ -4,7 +4,6 @@ import { Menu, Search, X, Leaf, ShoppingBag, ArrowRight, User } from "lucide-rea
 import { useState } from "react";
 import Link from "next/link";
 
-import { navigationLinks } from "../navigation-links";
 
 export function HomeHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,20 +39,6 @@ export function HomeHeader() {
             </div>
           </Link>
         </div>
-
-        {/* Desktop Navigation Links with hover animations */}
-        <nav className="hidden items-center gap-1 md:flex">
-          {navigationLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="relative rounded-xl px-3.5 py-2 text-sm font-semibold text-zinc-600 transition-all duration-200 hover:text-emerald-700 hover:bg-emerald-50/60 group cursor-pointer"
-            >
-              {link.label}
-              <span className="absolute bottom-1 left-3.5 right-3.5 h-0.5 scale-x-0 rounded-full bg-emerald-600 transition-transform duration-200 ease-out group-hover:scale-x-100" />
-            </Link>
-          ))}
-        </nav>
 
         {/* Search input bar on medium+ screens */}
         <label className="hidden flex-1 max-w-xs items-center gap-2.5 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-2 text-zinc-400 focus-within:border-emerald-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 lg:flex transition-all">
@@ -120,17 +105,6 @@ export function HomeHeader() {
             </div>
 
             <div className="flex flex-1 flex-col gap-1.5 text-sm font-semibold">
-              {navigationLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="rounded-xl px-3.5 py-3 text-zinc-700 transition-colors hover:bg-emerald-50 hover:text-emerald-800"
-                  onClick={closeMenu}
-                >
-                  {link.label}
-                </Link>
-              ))}
-
               <div className="mt-auto pt-4 border-t border-zinc-100">
                 <Link
                   href="/login"

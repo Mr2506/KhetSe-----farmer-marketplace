@@ -38,41 +38,54 @@ export function BuyerOrderCard({ order, onRate }: { order: any, onRate?: (produc
       
       {/* Body */}
       <div className="p-5 sm:flex sm:items-center sm:justify-between sm:gap-6">
-        <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-1">
-            {order.produceItem?.category || "Produce"}
-          </p>
-          <h3 className="text-lg font-bold text-zinc-900 truncate">
-            {order.produceItem?.name || "Deleted Item"}
-          </h3>
-          
-          <div className="mt-2.5 flex flex-wrap items-center gap-4">
-            <div className="flex items-baseline gap-1">
-              <span className="text-xs text-zinc-400">Qty</span>
-              <span className="text-sm font-bold text-zinc-800">
-                {order.quantityOrdered} {order.produceItem?.unit || "kg"}
-              </span>
+        <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
+          {order.produceItem?.photos?.[0] ? (
+            <img 
+              src={order.produceItem.photos[0]} 
+              alt={order.produceItem.name || "Product"} 
+              className="h-20 w-20 shrink-0 rounded-xl object-cover border border-zinc-200"
+            />
+          ) : (
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 text-3xl">
+              🌾
             </div>
-            <div className="h-4 w-px bg-zinc-200" />
-            <div className="flex items-baseline gap-1">
-              <span className="text-xs text-zinc-400">Total</span>
-              <span className="text-sm font-bold text-emerald-700">
-                {formatCurrency(order.totalPrice)}
-              </span>
-            </div>
-          </div>
-
-          {/* INJECTED: The Rating Button (Only shows if Delivered and if we have the produce ID) */}
-          {(order.status === "Delivered" || order.status === "Placed" || order.status === "Confirmed") && order.produceItem?._id && onRate && (
-            <button
-              onClick={() => onRate(order.produceItem._id, order.produceItem.name)}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700 shadow-sm hover:border-amber-300 hover:bg-amber-100 transition-colors"
-            >
-              <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
-              Rate this Crop
-            </button>
           )}
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-1">
+              {order.produceItem?.category || "Produce"}
+            </p>
+            <h3 className="text-lg font-bold text-zinc-900 truncate">
+              {order.produceItem?.name || "Deleted Item"}
+            </h3>
+            
+            <div className="mt-2.5 flex flex-wrap items-center gap-4">
+              <div className="flex items-baseline gap-1">
+                <span className="text-xs text-zinc-400">Qty</span>
+                <span className="text-sm font-bold text-zinc-800">
+                  {order.quantityOrdered} {order.produceItem?.unit || "kg"}
+                </span>
+              </div>
+              <div className="h-4 w-px bg-zinc-200" />
+              <div className="flex items-baseline gap-1">
+                <span className="text-xs text-zinc-400">Total</span>
+                <span className="text-sm font-bold text-emerald-700">
+                  {formatCurrency(order.totalPrice)}
+                </span>
+              </div>
+            </div>
 
+            {/* INJECTED: The Rating Button (Only shows if Delivered and if we have the produce ID) */}
+            {(order.status === "Delivered" || order.status === "Placed" || order.status === "Confirmed") && order.produceItem?._id && onRate && (
+              <button
+                onClick={() => onRate(order.produceItem._id, order.produceItem.name)}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700 shadow-sm hover:border-amber-300 hover:bg-amber-100 transition-colors"
+              >
+                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
+                Rate this Crop
+              </button>
+            )}
+
+          </div>
         </div>
 
         {/* Farmer contact */}

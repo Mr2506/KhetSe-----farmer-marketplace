@@ -74,9 +74,22 @@ export function FarmerOrderCard({ order, onUpdate }: { order: any; onUpdate?: ()
       <div className="p-5">
         <ul className="space-y-1.5 mb-4">
           <li className="flex items-center justify-between text-sm">
-            <span className="font-medium text-zinc-800">
-              {order.produceItem?.name || "Deleted Item"}
-            </span>
+            <div className="flex items-center gap-3">
+              {order.produceItem?.photos?.[0] ? (
+                <img 
+                  src={order.produceItem.photos[0]} 
+                  alt={order.produceItem.name || "Product"} 
+                  className="h-10 w-10 rounded-lg object-cover border border-zinc-200 shrink-0"
+                />
+              ) : (
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 text-lg">
+                  🌾
+                </div>
+              )}
+              <span className="font-medium text-zinc-800">
+                {order.produceItem?.name || "Deleted Item"}
+              </span>
+            </div>
             <span className="text-zinc-500 font-medium">
               {order.quantityOrdered} {order.produceItem?.unit || "kg"}
             </span>
