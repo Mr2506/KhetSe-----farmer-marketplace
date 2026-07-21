@@ -4,111 +4,83 @@ import { MapPin, Phone, Package, Star } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  Confirmed: { bg: "bg-blue-50",   text: "text-blue-700",  dot: "bg-blue-500" },
-  Placed:    { bg: "bg-blue-50",   text: "text-blue-700",  dot: "bg-blue-500" },
+  Confirmed: { bg: "bg-zinc-100",   text: "text-zinc-700",  dot: "bg-zinc-400" },
+  Placed:    { bg: "bg-amber-50",   text: "text-amber-700",  dot: "bg-amber-500" },
   Accepted:  { bg: "bg-amber-50",  text: "text-amber-700", dot: "bg-amber-500" },
-  Packed:    { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500" },
-  Shipped:   { bg: "bg-indigo-50", text: "text-indigo-700", dot: "bg-indigo-500" },
-  Delivered: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500" },
-  Cancelled: { bg: "bg-red-50",    text: "text-red-700",   dot: "bg-red-500" },
+  Packed:    { bg: "bg-zinc-100", text: "text-zinc-700", dot: "bg-zinc-400" },
+  Shipped:   { bg: "bg-zinc-100", text: "text-zinc-700", dot: "bg-zinc-400" },
+  Delivered: { bg: "bg-zinc-100", text: "text-[#2E7D32]", dot: "bg-[#2E7D32]" },
+  Cancelled: { bg: "bg-zinc-100",    text: "text-zinc-500",   dot: "bg-zinc-400" },
 };
 
-// NEW: Added onRate prop to receive the function from the parent page
 export function BuyerOrderCard({ order, onRate }: { order: any, onRate?: (produceId: string, cropName: string) => void }) {
   const dateStr = order.createdAt ? formatDate(order.createdAt) : "Recently";
   const style = STATUS_STYLES[order.status] ?? { bg: "bg-zinc-100", text: "text-zinc-600", dot: "bg-zinc-400" };
+  const isTerminal = order.status === "Delivered" || order.status === "Cancelled";
 
   return (
-    <div className="group overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
-     {/* Header bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/60 px-5 py-3.5">
-        <div className="flex items-center gap-2">
-          <Package className="h-3.5 w-3.5 text-zinc-400" />
-          <p className="text-xs font-medium text-zinc-500">
-            Ordered {dateStr} 
-            <span className="mx-1.5 text-zinc-300">|</span> 
-            <span className="font-mono text-zinc-400">#{order._id?.slice(-8).toUpperCase()}</span>
-          </p>
-        </div>
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ${style.bg} ${style.text}`}>
-          <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
-          {order.status}
-        </span>
-      </div>
-      
-      {/* Body */}
-      <div className="p-5 sm:flex sm:items-center sm:justify-between sm:gap-6">
-        <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
+    <div className={`py-6 border-b border-zinc-200 last:border-0 group hover:bg-zinc-50/50 transition-colors -mx-4 px-4 sm:mx-0 sm:px-0 sm:hover:bg-transparent ${isTerminal ? "opacity-80" : ""}`}>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+        <div className="flex items-start gap-5 flex-1 min-w-0">
           {order.produceItem?.photos?.[0] ? (
             <img 
               src={order.produceItem.photos[0]} 
               alt={order.produceItem.name || "Product"} 
-              className="h-20 w-20 shrink-0 rounded-xl object-cover border border-zinc-200"
+              className="h-16 w-16 shrink-0 rounded-sm object-cover bg-zinc-100"
             />
           ) : (
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 text-3xl">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-sm bg-zinc-100 text-zinc-400 text-2xl">
               🌾
             </div>
           )}
+          
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-1">
-              {order.produceItem?.category || "Produce"}
-            </p>
-            <h3 className="text-lg font-bold text-zinc-900 truncate">
-              {order.produceItem?.name || "Deleted Item"}
-            </h3>
-            
-            <div className="mt-2.5 flex flex-wrap items-center gap-4">
-              <div className="flex items-baseline gap-1">
-                <span className="text-xs text-zinc-400">Qty</span>
-                <span className="text-sm font-bold text-zinc-800">
-                  {order.quantityOrdered} {order.produceItem?.unit || "kg"}
-                </span>
-              </div>
-              <div className="h-4 w-px bg-zinc-200" />
-              <div className="flex items-baseline gap-1">
-                <span className="text-xs text-zinc-400">Total</span>
-                <span className="text-sm font-bold text-emerald-700">
-                  {formatCurrency(order.totalPrice)}
-                </span>
-              </div>
-            </div>
-
-            {/* INJECTED: The Rating Button (Only shows if Delivered and if we have the produce ID) */}
-            {(order.status === "Delivered" || order.status === "Placed" || order.status === "Confirmed") && order.produceItem?._id && onRate && (
-              <button
-                onClick={() => onRate(order.produceItem._id, order.produceItem.name)}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700 shadow-sm hover:border-amber-300 hover:bg-amber-100 transition-colors"
-              >
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
-                Rate this Crop
-              </button>
-            )}
-
+             <div className="flex flex-wrap items-center gap-2 mb-1">
+               <span className={`text-[10px] font-bold uppercase tracking-widest ${style.text}`}>
+                 {order.status}
+               </span>
+               <span className="text-zinc-300">·</span>
+               <span className="text-xs font-mono text-zinc-400">#{order._id?.slice(-8).toUpperCase()}</span>
+             </div>
+             
+             <h3 className="text-xl font-medium text-zinc-900 truncate">
+               {order.produceItem?.name || "Deleted Item"}
+             </h3>
+             
+             <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-zinc-600">
+               <span>Qty: <strong className="font-medium text-zinc-900">{order.quantityOrdered} {order.produceItem?.unit || "kg"}</strong></span>
+               <span className="w-px h-3 bg-zinc-300" />
+               <span>Total: <strong className="font-medium text-[#2E7D32]">{formatCurrency(order.totalPrice)}</strong></span>
+             </div>
+             
+             {/* Farmer info inline */}
+             <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+               <span className="flex items-center gap-1.5">
+                 <MapPin className="w-3.5 h-3.5" /> 
+                 {order.farmer?.farmVillageName || "Local Farm"}
+               </span>
+               <span className="w-px h-3 bg-zinc-300" />
+               <a href={`tel:${order.farmer?.phone}`} className="flex items-center gap-1.5 hover:text-[#2E7D32] transition-colors">
+                 <Phone className="w-3.5 h-3.5" /> 
+                 {order.farmer?.phone || "No phone"}
+               </a>
+             </div>
           </div>
         </div>
-
-        {/* Farmer contact */}
-        <div className="mt-4 sm:mt-0 rounded-xl border border-zinc-200/80 bg-zinc-50 p-4 sm:min-w-[220px] shrink-0">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-2">Pickup Details</p>
-          <p className="font-semibold text-zinc-900 text-sm">
-            {order.farmer?.firstName} {order.farmer?.lastName}
-          </p>
-          <div className="mt-2 space-y-1.5">
-            <p className="flex items-center gap-2 text-xs text-zinc-500">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-              <span>{order.farmer?.farmVillageName || "Local Farm"}</span>
-            </p>
-            <p className="flex items-center gap-2 text-xs">
-              <Phone className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-              <a
-                href={`tel:${order.farmer?.phone}`}
-                className="font-medium text-zinc-600 hover:text-emerald-700 hover:underline transition-colors"
-              >
-                {order.farmer?.phone || "No phone provided"}
-              </a>
-            </p>
-          </div>
+        
+        {/* Actions */}
+        <div className="flex flex-col md:items-end justify-between gap-4">
+          <p className="text-xs text-zinc-400">Ordered {dateStr}</p>
+          
+          {(order.status === "Delivered" || order.status === "Placed" || order.status === "Confirmed") && order.produceItem?._id && onRate && (
+            <button
+              onClick={() => onRate(order.produceItem._id, order.produceItem.name)}
+              className="inline-flex items-center gap-2 rounded-sm border border-zinc-200 px-4 py-2 text-xs font-medium text-zinc-700 hover:border-[#EF9F27] hover:text-[#EF9F27] transition-colors bg-white mt-auto"
+            >
+              <Star className="h-3.5 w-3.5" />
+              Rate Crop
+            </button>
+          )}
         </div>
       </div>
     </div>

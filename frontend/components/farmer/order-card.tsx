@@ -7,12 +7,11 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_STYLE: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
   Pending:   { bg: "bg-amber-50",   text: "text-amber-700",   icon: <AlertCircle className="h-3.5 w-3.5" /> },
-  Confirmed: { bg: "bg-blue-50",    text: "text-blue-700",    icon: <Clock className="h-3.5 w-3.5" /> },
-  Delivered: { bg: "bg-emerald-50", text: "text-emerald-700", icon: <CheckCircle2 className="h-3.5 w-3.5" /> },
-  Cancelled: { bg: "bg-red-50",     text: "text-red-700",     icon: <XCircle className="h-3.5 w-3.5" /> },
+  Confirmed: { bg: "bg-zinc-100",    text: "text-zinc-700",    icon: <Clock className="h-3.5 w-3.5" /> },
+  Delivered: { bg: "bg-zinc-100", text: "text-[#2E7D32]", icon: <CheckCircle2 className="h-3.5 w-3.5" /> },
+  Cancelled: { bg: "bg-zinc-100",     text: "text-zinc-500",     icon: <XCircle className="h-3.5 w-3.5" /> },
 };
 
-// ADDED: onUpdate function to the props
 export function FarmerOrderCard({ order, onUpdate }: { order: any; onUpdate?: () => void }) {
   const [loading, setLoading] = useState(false);
 
@@ -40,7 +39,6 @@ export function FarmerOrderCard({ order, onUpdate }: { order: any; onUpdate?: ()
 
       toast.success(`Order marked as ${status}`);
       
-      // FIXED: Call the parent update function instead of reloading the page!
       if (onUpdate) {
         onUpdate();
       } else {
@@ -55,73 +53,62 @@ export function FarmerOrderCard({ order, onUpdate }: { order: any; onUpdate?: ()
   }
 
   return (
-    <div className={`rounded-2xl border bg-white shadow-sm transition-all duration-200 hover:shadow-md ${
-      isTerminal ? "border-zinc-200/60 opacity-80" : "border-zinc-200/80"
-    }`}>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 px-5 py-3.5 bg-zinc-50/50 rounded-t-2xl">
-        <div className="flex items-center gap-2">
-          <User className="h-3.5 w-3.5 text-zinc-400" />
-          <p className="text-sm font-semibold text-zinc-700">{buyerName}</p>
-          <span className="text-zinc-300 text-xs">·</span>
-          <p className="text-xs text-zinc-400 font-mono">{shortId}</p>
-        </div>
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ${style.bg} ${style.text}`}>
-          {style.icon}
-          {order.status}
-        </span>
-      </div>
-
-      <div className="p-5">
-        <ul className="space-y-1.5 mb-4">
-          <li className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-3">
-              {order.produceItem?.photos?.[0] ? (
-                <img 
-                  src={order.produceItem.photos[0]} 
-                  alt={order.produceItem.name || "Product"} 
-                  className="h-10 w-10 rounded-lg object-cover border border-zinc-200 shrink-0"
-                />
-              ) : (
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 text-lg">
-                  🌾
-                </div>
-              )}
-              <span className="font-medium text-zinc-800">
-                {order.produceItem?.name || "Deleted Item"}
-              </span>
+    <div className={`py-6 border-b border-zinc-200 last:border-0 ${isTerminal ? "opacity-75" : ""}`}>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+        <div className="flex items-start gap-4">
+          {order.produceItem?.photos?.[0] ? (
+            <img 
+              src={order.produceItem.photos[0]} 
+              alt={order.produceItem.name || "Product"} 
+              className="h-14 w-14 rounded-sm object-cover bg-zinc-100 shrink-0"
+            />
+          ) : (
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm bg-zinc-100 text-zinc-400 text-xl">
+              🌾
             </div>
-            <span className="text-zinc-500 font-medium">
-              {order.quantityOrdered} {order.produceItem?.unit || "kg"}
-            </span>
-          </li>
-        </ul>
-
-        <div className="flex items-center justify-between border-t border-zinc-100 pt-3.5">
+          )}
+          
           <div>
-            <p className="text-xs text-zinc-400 mb-0.5">{order.createdAt ? formatDate(order.createdAt) : "Recently"}</p>
-            <p className="text-lg font-bold text-emerald-700">{formatCurrency(order.totalPrice)}</p>
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <span className={`text-[10px] font-bold uppercase tracking-widest ${style.text}`}>
+                {order.status}
+              </span>
+              <span className="text-zinc-300">·</span>
+              <span className="text-xs text-zinc-500 font-mono">#{shortId}</span>
+            </div>
+            <h3 className="text-lg font-medium text-zinc-900">
+               {order.produceItem?.name || "Deleted Item"}
+            </h3>
+            <p className="mt-1 text-sm text-zinc-600">
+               <strong className="font-medium text-zinc-900">{order.quantityOrdered} {order.produceItem?.unit || "kg"}</strong> ordered by {buyerName}
+            </p>
           </div>
-
-          <div className="flex gap-2">
+        </div>
+        
+        <div className="flex flex-col sm:items-end justify-between gap-4">
+           <div className="text-left sm:text-right">
+             <p className="text-2xl font-medium text-[#2E7D32]">{formatCurrency(order.totalPrice)}</p>
+             <p className="text-xs text-zinc-500 mt-1">{order.createdAt ? formatDate(order.createdAt) : "Recently"}</p>
+           </div>
+           
+           <div className="flex items-center gap-2">
             {order.status === "Pending" && (
               <>
                 <button
                   type="button"
                   disabled={loading}
-                  onClick={() => setStatus("Confirmed")}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95 disabled:opacity-50 transition-all"
+                  onClick={() => setStatus("Cancelled")}
+                  className="px-3 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
                 >
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  {loading ? "Saving..." : "Accept"}
+                  Decline
                 </button>
                 <button
                   type="button"
                   disabled={loading}
-                  onClick={() => setStatus("Cancelled")}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 hover:bg-red-100 active:scale-95 disabled:opacity-50 transition-all"
+                  onClick={() => setStatus("Confirmed")}
+                  className="px-4 py-1.5 text-xs font-medium bg-[#EF9F27] text-white rounded-sm hover:bg-[#d68b20] transition-colors"
                 >
-                  <XCircle className="h-3.5 w-3.5" />
-                  Decline
+                  {loading ? "Accepting..." : "Accept Order"}
                 </button>
               </>
             )}
@@ -131,13 +118,12 @@ export function FarmerOrderCard({ order, onUpdate }: { order: any; onUpdate?: ()
                 type="button"
                 disabled={loading}
                 onClick={() => setStatus("Delivered")}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95 disabled:opacity-50 transition-all"
+                className="px-4 py-1.5 text-xs font-medium bg-[#2E7D32] text-white rounded-sm hover:bg-[#236326] transition-colors"
               >
-                <CheckCircle2 className="h-3.5 w-3.5" />
                 {loading ? "Updating..." : "Mark Delivered"}
               </button>
             )}
-          </div>
+           </div>
         </div>
       </div>
     </div>

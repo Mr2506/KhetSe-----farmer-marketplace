@@ -12,6 +12,7 @@ import {
   Apple,
   Carrot,
   Plus,
+  ArrowRight,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════════════
@@ -215,12 +216,12 @@ const MONTH_NAMES = [
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const SEASON_CONFIG: Record<string, { icon: React.ElementType; gradient: string; bgTint: string; badge: string }> = {
-  Winter:  { icon: Snowflake,  gradient: "from-sky-500 to-blue-600",      bgTint: "bg-sky-50",    badge: "bg-sky-100 text-sky-700" },
-  Spring:  { icon: Leaf,       gradient: "from-lime-500 to-emerald-600",  bgTint: "bg-lime-50",   badge: "bg-lime-100 text-lime-700" },
-  Summer:  { icon: Sun,        gradient: "from-amber-400 to-orange-500",  bgTint: "bg-amber-50",  badge: "bg-amber-100 text-amber-700" },
-  Monsoon: { icon: CloudRain,  gradient: "from-teal-500 to-cyan-600",     bgTint: "bg-teal-50",   badge: "bg-teal-100 text-teal-700" },
-  Autumn:  { icon: Leaf,       gradient: "from-orange-400 to-red-500",    bgTint: "bg-orange-50", badge: "bg-orange-100 text-orange-700" },
+const SEASON_CONFIG: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
+  Winter:  { icon: Snowflake,  color: "text-zinc-600", bg: "bg-zinc-50" },
+  Spring:  { icon: Leaf,       color: "text-[#2E7D32]", bg: "bg-[#2E7D32]/5" },
+  Summer:  { icon: Sun,        color: "text-[#EF9F27]", bg: "bg-[#EF9F27]/5" },
+  Monsoon: { icon: CloudRain,  color: "text-zinc-800", bg: "bg-zinc-100" },
+  Autumn:  { icon: Leaf,       color: "text-zinc-600", bg: "bg-zinc-50" },
 };
 
 function getCalendarDays(year: number, month: number) {
@@ -293,123 +294,143 @@ export default function FarmerCalendarPage() {
   const veggiesCount = seasonData.items.filter((i) => i.type === "vegetable").length;
 
   return (
-    <div className="space-y-7 animate-in fade-in duration-300">
+    <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 font-sans">
       {/* ── Page Header ───────────────────── */}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900 sm:text-3xl tracking-tight">
-            Seasonal Calendar
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+        <div className="max-w-xl">
+          <h1 className="text-3xl sm:text-4xl font-medium tracking-tight text-zinc-900">
+            Harvest Planner
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            Know what&apos;s in season — plan your harvest &amp; listings
+          <p className="mt-4 text-base text-zinc-600 leading-relaxed">
+            Align your plantings and listings with regional demand cycles. Buyers actively search for these high-yield seasonal crops right now.
           </p>
         </div>
         <Link
           href="/farmer/listings/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-500 transition-all"
+          className="inline-flex items-center gap-2 rounded-sm bg-[#EF9F27] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#d68b20] focus:outline-none focus:ring-2 focus:ring-[#EF9F27] focus:ring-offset-2"
         >
           <Plus className="h-4 w-4" />
-          New Listing
+          Create new listing
         </Link>
       </div>
 
-      {/* ── Season Banner ─────────────────── */}
-      <div
-        className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${seasonCfg.gradient} p-6 sm:p-8 text-white shadow-lg`}
-      >
-        <div className="absolute right-4 top-4 opacity-15 sm:right-8 sm:top-6">
-          <SeasonIcon className="h-24 w-24 sm:h-32 sm:w-32" strokeWidth={1} />
-        </div>
-        <p className="text-xs font-bold uppercase tracking-widest text-white/70">
-          {currentYear} · {seasonData.season} Season
-        </p>
-        <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">
-          {MONTH_NAMES[currentMonth]}
-        </h2>
-        <p className="mt-2 text-sm text-white/80 max-w-md">
-          {fruitsCount} fruits &amp; {veggiesCount} vegetables are in season this month.
-          List them now to get more buyers!
-        </p>
-      </div>
-
-      {/* ── Calendar + Produce Grid ────────── */}
-      <div className="grid gap-6 lg:grid-cols-[380px_1fr] xl:grid-cols-[420px_1fr]">
-        {/* ──── Calendar Card ──────────────── */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4">
-            <button
-              onClick={goToPrevMonth}
-              className="grid h-9 w-9 place-items-center rounded-xl bg-zinc-100 text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-              aria-label="Previous month"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="text-center">
-              <p className="text-base font-bold text-zinc-900">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12 lg:gap-20 items-start">
+        {/* ──── Left Column: Calendar & Filters ──────────────── */}
+        <div className="flex flex-col gap-10 lg:sticky lg:top-8">
+          
+          {/* Functional Calendar */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-medium text-zinc-900">
                 {MONTH_NAMES[currentMonth]} {currentYear}
-              </p>
-              {!(currentMonth === today.getMonth() && currentYear === today.getFullYear()) && (
+              </h2>
+              <div className="flex gap-1">
                 <button
-                  onClick={goToToday}
-                  className="mt-0.5 text-[11px] font-semibold text-emerald-600 hover:underline"
+                  onClick={goToPrevMonth}
+                  className="p-1.5 text-zinc-400 hover:text-zinc-900 transition-colors"
+                  aria-label="Previous month"
                 >
-                  Go to today
+                  <ChevronLeft className="h-5 w-5" />
                 </button>
-              )}
+                <button
+                  onClick={goToNextMonth}
+                  className="p-1.5 text-zinc-400 hover:text-zinc-900 transition-colors"
+                  aria-label="Next month"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
             </div>
-            <button
-              onClick={goToNextMonth}
-              className="grid h-9 w-9 place-items-center rounded-xl bg-zinc-100 text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-              aria-label="Next month"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
+
+            <div className="grid grid-cols-7 mb-2">
+              {DAY_NAMES.map((d) => (
+                <div key={d} className="text-center text-[10px] font-medium uppercase tracking-widest text-zinc-500">
+                  {d.charAt(0)}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-y-1">
+              {calendarDays.map((cell, idx) => {
+                const isCurrentToday = isToday(cell.day, cell.currentMonth);
+                return (
+                  <div
+                    key={idx}
+                    className={`flex h-8 items-center justify-center text-sm
+                      ${!cell.currentMonth ? "text-zinc-300" : "text-zinc-700"}
+                    `}
+                  >
+                    {isCurrentToday ? (
+                      <span className="flex h-7 w-7 items-center justify-center rounded-sm bg-[#2E7D32] text-white font-medium">
+                        {cell.day}
+                      </span>
+                    ) : (
+                      <span>{cell.day}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {!(currentMonth === today.getMonth() && currentYear === today.getFullYear()) && (
+              <button
+                onClick={goToToday}
+                className="mt-4 text-xs font-medium text-zinc-500 hover:text-[#2E7D32] transition-colors"
+              >
+                Return to today
+              </button>
+            )}
           </div>
 
-          <div className="grid grid-cols-7 border-b border-zinc-100 bg-zinc-50/60">
-            {DAY_NAMES.map((d) => (
-              <div
-                key={d}
-                className="py-2.5 text-center text-[11px] font-bold uppercase tracking-wider text-zinc-400"
-              >
-                {d}
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-7">
-            {calendarDays.map((cell, idx) => (
-              <div
-                key={idx}
-                className={`relative flex h-11 items-center justify-center text-sm transition-colors
-                  ${cell.currentMonth ? "text-zinc-800 font-medium" : "text-zinc-300"}
-                `}
-              >
-                {isToday(cell.day, cell.currentMonth) ? (
-                  <span className="grid h-8 w-8 place-items-center rounded-full bg-emerald-600 font-bold text-white shadow-md shadow-emerald-600/30">
-                    {cell.day}
+          {/* Type Filter */}
+          <div>
+            <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400 mb-3 border-b border-zinc-100 pb-2">
+              Filter Produce
+            </h3>
+            <div className="flex flex-col gap-1.5">
+              {(
+                [
+                  { key: "all", label: "Everything in season", count: seasonData.items.length },
+                  { key: "fruit", label: "Fruits only", count: fruitsCount },
+                  { key: "vegetable", label: "Vegetables only", count: veggiesCount },
+                ]
+              ).map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key as "all" | "fruit" | "vegetable")}
+                  className={`flex items-center justify-between px-2 py-1.5 text-sm transition-colors text-left
+                    ${filter === tab.key
+                      ? "font-medium text-[#2E7D32] bg-[#2E7D32]/5 rounded-sm"
+                      : "text-zinc-600 hover:text-zinc-900"
+                    }
+                  `}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`text-xs ${filter === tab.key ? "text-[#2E7D32]" : "text-zinc-400"}`}>
+                    {tab.count}
                   </span>
-                ) : (
-                  <span>{cell.day}</span>
-                )}
-              </div>
-            ))}
+                </button>
+              ))}
+            </div>
           </div>
-
-          <div className="border-t border-zinc-100 p-4">
-            <p className="mb-2.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-              Quick Jump
-            </p>
-            <div className="grid grid-cols-4 gap-1.5">
+          
+          {/* Year Strip / Quick Jump */}
+          <div>
+            <h3 className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400 mb-3 border-b border-zinc-100 pb-2">
+              Jump to month
+            </h3>
+            <div className="grid grid-cols-3 gap-1">
               {MONTH_NAMES.map((m, i) => (
                 <button
                   key={m}
-                  onClick={() => setCurrentMonth(i)}
-                  className={`rounded-lg px-1 py-1.5 text-xs font-semibold transition-all
-                    ${
-                      i === currentMonth
-                        ? "bg-emerald-600 text-white shadow-sm"
-                        : "text-zinc-500 hover:bg-emerald-50 hover:text-emerald-700"
+                  onClick={() => {
+                    setCurrentMonth(i);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className={`py-1.5 text-xs transition-colors rounded-sm
+                    ${i === currentMonth
+                      ? "bg-zinc-800 text-white font-medium"
+                      : "text-zinc-500 hover:bg-zinc-100"
                     }
                   `}
                 >
@@ -420,142 +441,84 @@ export default function FarmerCalendarPage() {
           </div>
         </div>
 
-{/* ──── Seasonal Produce List ─────── */}
-        <div className="space-y-5">
-          <div className="flex flex-wrap items-center gap-2">
-            {(
-              [
-                { key: "all", label: "All", count: seasonData.items.length, icon: null },
-                { key: "fruit", label: "Fruits", count: fruitsCount, icon: Apple },
-                { key: "vegetable", label: "Vegetables", count: veggiesCount, icon: Carrot },
-              ]
-            ).map((tab) => {
-              const Icon = tab.icon; // Capitalized for React
-
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setFilter(tab.key as "all" | "fruit" | "vegetable")}
-                  className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-all
-                    ${
-                      filter === tab.key
-                        ? "bg-emerald-600 text-white shadow-sm shadow-emerald-600/20"
-                        : "bg-white text-zinc-600 border border-zinc-200 hover:border-emerald-300 hover:text-emerald-700"
-                    }
-                  `}
-                >
-                  {Icon && <Icon className="h-3.5 w-3.5" />}
-                  {tab.label}
-                  <span
-                    className={`ml-0.5 text-xs ${filter === tab.key ? "text-white/70" : "text-zinc-400"}`}
-                  >
-                    ({tab.count})
-                  </span>
-                </button>
-              );
-            })}
+        {/* ──── Right Column: Seasonal Produce List ─────── */}
+        <div>
+          {/* Season Banner - Earthy, asymmetric */}
+          <div className={`mb-10 border-l-2 border-[#2E7D32] ${seasonCfg.bg} px-6 py-8 sm:px-8 flex flex-col sm:flex-row sm:items-start justify-between gap-6`}>
+            <div>
+              <div className={`flex items-center gap-2 mb-2 ${seasonCfg.color}`}>
+                <SeasonIcon className="h-4 w-4" strokeWidth={2} />
+                <span className="text-[11px] font-bold uppercase tracking-widest">
+                  {seasonData.season} Harvest
+                </span>
+              </div>
+              <h2 className="text-2xl font-medium text-zinc-900">
+                Peak demand for {MONTH_NAMES[currentMonth]}
+              </h2>
+            </div>
+            
+            <div className="text-sm text-zinc-600 sm:max-w-[220px] sm:border-l sm:border-zinc-300/60 sm:pl-6">
+              Listing these specific items now typically results in faster sales and fewer stock delays.
+            </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          {/* Produce List (Minimalist, row-based) */}
+          <div className="flex flex-col">
+            <div className="grid grid-cols-12 gap-4 border-b border-zinc-200 pb-3 mb-2 px-2 text-xs font-medium text-zinc-400 uppercase tracking-wider hidden sm:grid">
+              <div className="col-span-6">Crop</div>
+              <div className="col-span-3">Category</div>
+              <div className="col-span-3 text-right">Action</div>
+            </div>
+
             {filteredItems.map((item) => (
               <div
                 key={item.name}
-                className={`group relative overflow-hidden rounded-2xl border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5
-                  ${
-                    item.type === "fruit"
-                      ? "border-amber-200/60 hover:border-amber-300"
-                      : "border-emerald-200/60 hover:border-emerald-300"
-                  }
-                `}
+                className="group grid grid-cols-1 sm:grid-cols-12 gap-4 items-center py-4 px-2 border-b border-zinc-100 last:border-0 hover:bg-zinc-50/50 transition-colors"
               >
-                <span
-                  className={`absolute top-3 right-3 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider
-                    ${
-                      item.type === "fruit"
-                        ? "bg-amber-50 text-amber-600"
-                        : "bg-emerald-50 text-emerald-600"
-                    }
-                  `}
-                >
-                  {item.type}
-                </span>
-
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl text-2xl border transition-colors
-                      ${
-                        item.type === "fruit"
-                          ? "bg-amber-50 border-amber-100 group-hover:bg-amber-100"
-                          : "bg-emerald-50 border-emerald-100 group-hover:bg-emerald-100"
-                      }
-                    `}
-                  >
-                    {item.emoji}
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-[15px] font-bold text-zinc-900 truncate pr-14">
+                <div className="col-span-1 sm:col-span-6 flex items-start gap-3">
+                  <span className="text-xl pt-0.5" aria-hidden="true">{item.emoji}</span>
+                  <div>
+                    <h3 className="text-base font-medium text-zinc-900">
                       {item.name}
                     </h3>
                     {item.tip && (
-                      <p className="mt-0.5 text-xs text-zinc-500 italic">{item.tip}</p>
+                      <p className="mt-0.5 text-sm text-zinc-500">
+                        {item.tip}
+                      </p>
                     )}
                   </div>
                 </div>
-
-                <Link
-                  href="/farmer/listings/new"
-                  className={`mt-3 inline-flex items-center gap-1 text-xs font-semibold transition-colors
-                    ${
-                      item.type === "fruit"
-                        ? "text-amber-600 hover:text-amber-700"
-                        : "text-emerald-600 hover:text-emerald-700"
-                    }
-                  `}
-                >
-                  <Plus className="h-3 w-3" />
-                  List this crop →
-                </Link>
+                
+                <div className="col-span-1 sm:col-span-3 hidden sm:block">
+                  <span className="text-xs text-zinc-500 capitalize">
+                    {item.type}
+                  </span>
+                </div>
+                
+                <div className="col-span-1 sm:col-span-3 sm:text-right mt-2 sm:mt-0">
+                  <Link
+                    href={`/farmer/listings/new`}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E7D32] hover:text-[#236326] transition-colors"
+                  >
+                    List this crop
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
               </div>
             ))}
+
+            {filteredItems.length === 0 && (
+              <div className="py-16 text-center">
+                <p className="text-sm text-zinc-500">No {filter}s are recorded for this month's peak season.</p>
+                <button 
+                  onClick={() => setFilter("all")}
+                  className="mt-2 text-sm font-medium text-[#2E7D32] hover:underline"
+                >
+                  View all produce
+                </button>
+              </div>
+            )}
           </div>
-
-          {filteredItems.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-12 text-center">
-              <p className="text-sm text-zinc-400">No {filter}s found this month.</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── Year Overview Strip ────────────── */}
-      <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-bold text-zinc-900 mb-4">Year at a Glance</h3>
-        <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-2">
-          {MONTH_NAMES.map((m, i) => {
-            const s = SEASONAL_DATA[i];
-            const cfg = SEASON_CONFIG[s.season];
-            const isActive = i === currentMonth;
-            return (
-              <button
-                key={m}
-                onClick={() => {
-                  setCurrentMonth(i);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className={`group relative rounded-xl p-3 text-center transition-all
-                  ${isActive ? `bg-gradient-to-br ${cfg.gradient} text-white shadow-md` : `${cfg.bgTint} hover:shadow-sm`}
-                `}
-              >
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? "text-white/70" : "text-zinc-400"}`}>
-                  {m.slice(0, 3)}
-                </p>
-                <p className={`mt-1 text-lg font-extrabold ${isActive ? "text-white" : "text-zinc-700"}`}>
-                  {s.items.length}
-                </p>
-                <p className={`text-[10px] ${isActive ? "text-white/60" : "text-zinc-400"}`}>items</p>
-              </button>
-            );
-          })}
         </div>
       </div>
     </div>

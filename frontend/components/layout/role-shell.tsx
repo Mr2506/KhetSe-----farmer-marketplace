@@ -16,7 +16,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { navByRole } from "@/components/layout/nav-config";
 import { AppRole, ROLE_HOME, ROLE_LABELS } from "@/lib/roles";
@@ -40,6 +40,23 @@ export function RoleShell({ role, children }: RoleShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const mobileProfileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+      if (mobileProfileRef.current && !mobileProfileRef.current.contains(e.target as Node)) {
+        setMobileProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // ADDED THIS: States to hold the real user data
   const [userName, setUserName] = useState("User");
@@ -225,9 +242,10 @@ export function RoleShell({ role, children }: RoleShellProps) {
           </Link>
 
           {/* Right: Minimal profile avatar (dropdown on tap) */}
-          <div className="group relative">
+          <div className="group relative" ref={mobileProfileRef}>
             <button
               type="button"
+              onClick={() => setMobileProfileOpen(!mobileProfileOpen)}
               className="grid h-9 w-9 place-items-center rounded-full bg-[#2E7D32] text-white text-xs font-black shadow-sm ring-2 ring-[#2E7D32]/20 ring-offset-1 transition-transform duration-150 active:scale-95"
               aria-label="Profile menu"
             >
@@ -235,8 +253,13 @@ export function RoleShell({ role, children }: RoleShellProps) {
             </button>
 
             {/* Mobile profile dropdown */}
-            <div className="nav-popover-hover absolute right-0 top-full mt-2 w-56 rounded-2xl border border-[#E5E7EB] bg-white p-2.5 shadow-2xl shadow-black/10 z-50">
-              <div className="rounded-xl bg-[#F0FAF0] p-3 border border-[#2E7D32]/10 mb-2">
+            {mobileProfileOpen && (
+            <div className="absolute right-0 top-full pt-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+              <div 
+                className="w-56 rounded-2xl border border-[#E5E7EB] bg-white p-2.5 shadow-2xl shadow-black/10"
+                onClick={() => setMobileProfileOpen(false)}
+              >
+                <div className="rounded-xl bg-[#F0FAF0] p-3 border border-[#2E7D32]/10 mb-2">
                 <p className="text-xs font-bold text-[#1B5E20]">{userName}</p>
                 {userPhone && (
                   <p className="text-[11px] text-[#2E7D32]/80 truncate mt-0.5">+91 {userPhone}</p>
@@ -277,7 +300,9 @@ export function RoleShell({ role, children }: RoleShellProps) {
                   Sign Out
                 </button>
               </div>
+              </div>
             </div>
+            )}
           </div>
         </header>
 
@@ -298,9 +323,10 @@ export function RoleShell({ role, children }: RoleShellProps) {
 
               {/* Profile dropdown */}
               <div className="flex items-center gap-4">
-                <div className="group relative">
+                <div className="group relative" ref={profileRef}>
                   <button
                     type="button"
+                    onClick={() => setProfileOpen(!profileOpen)}
                     className="flex items-center gap-3 rounded-2xl border border-[#E5E7EB] bg-white px-3.5 py-2 text-left shadow-sm transition-all duration-150 hover:border-[#2E7D32] hover:shadow-md hover:shadow-[#2E7D32]/10"
                   >
                     {/* Avatar with ring */}
@@ -314,12 +340,17 @@ export function RoleShell({ role, children }: RoleShellProps) {
                       </p>
                       <p className="text-[11px] text-[#6B7280] font-medium">{ROLE_LABELS[role]}</p>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-[#9CA3AF] transition-transform duration-200 group-hover:rotate-180 group-hover:text-[#2E7D32]" />
+                    <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", profileOpen ? "rotate-180 text-[#2E7D32]" : "text-[#9CA3AF] group-hover:text-[#2E7D32]")} />
                   </button>
 
-                  {/* Hover dropdown */}
-                  <div className="nav-popover-hover absolute right-0 top-full mt-2 w-72 rounded-2xl border border-[#E5E7EB] bg-white p-3 shadow-2xl shadow-black/10 z-50">
-                    <div className="rounded-xl bg-[#F0FAF0] p-3 border border-[#2E7D32]/10 mb-2">
+                  {/* Click dropdown */}
+                  {profileOpen && (
+                  <div className="absolute right-0 top-full pt-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                    <div 
+                      className="w-72 rounded-2xl border border-[#E5E7EB] bg-white p-3 shadow-2xl shadow-black/10"
+                      onClick={() => setProfileOpen(false)}
+                    >
+                      <div className="rounded-xl bg-[#F0FAF0] p-3 border border-[#2E7D32]/10 mb-2">
                       <p className="text-xs font-bold text-[#1B5E20]">{userName}</p>
                       {userPhone && (
                         <p className="text-[11px] text-[#2E7D32]/80 truncate mt-0.5">+91 {userPhone}</p>
@@ -373,7 +404,9 @@ export function RoleShell({ role, children }: RoleShellProps) {
                         Sign Out
                       </button>
                     </div>
+                    </div>
                   </div>
+                  )}
                 </div>
               </div>
             </div>
