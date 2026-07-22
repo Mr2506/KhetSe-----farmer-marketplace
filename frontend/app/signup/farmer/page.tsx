@@ -218,7 +218,6 @@ export default function FarmerSignup() {
                 </div>
               </div>
 
-              <div id="recaptcha-container"></div>
               <div className="pt-4">
                 <button type="submit" className="w-full bg-[#2D8A4E] border border-[#2D8A4E] text-white font-bold py-3 rounded-lg hover:bg-green-700 transition shadow-sm">
                   Create account & send OTP
@@ -245,6 +244,7 @@ export default function FarmerSignup() {
             </form>
           </div>
         )}
+        <div id="recaptcha-container" className="fixed bottom-0 right-0"></div>
       </div>
     </div>
   );
