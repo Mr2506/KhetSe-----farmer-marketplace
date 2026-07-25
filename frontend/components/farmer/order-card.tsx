@@ -26,7 +26,7 @@ export function FarmerOrderCard({ order, onUpdate }: { order: any; onUpdate?: ()
     try {
       const token = localStorage.getItem("khetse_token");
       
-      const res = await fetch(`https://khetse-backend.onrender.com/api/orders/${orderId}/status`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

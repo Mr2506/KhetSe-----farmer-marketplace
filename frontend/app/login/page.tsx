@@ -48,7 +48,7 @@ export default function LoginPage() {
 
     try {
       // 1. SMART PRE-CHECK: Ask Node.js if this number exists in MongoDB
-      const checkRes = await fetch("https://khetse-backend.onrender.com/api/users/check-phone", {
+      const checkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/check-phone`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: formattedNumber })
@@ -101,7 +101,7 @@ export default function LoginPage() {
 
       setMessage({ text: "Verifying with server...", type: "success" });
 
-      const response = await fetch("https://khetse-backend.onrender.com/api/users/login", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firebaseToken })

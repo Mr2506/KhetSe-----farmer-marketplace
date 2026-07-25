@@ -6,6 +6,7 @@ import { Package, ArrowRight, ArrowLeft, AlertCircle, ChevronRight, ShoppingBag,
 import { BuyerOrderCard } from "@/components/buyer/order-card";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
+import { socket } from "@/lib/socket";
 
 export default function BuyerOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -23,30 +24,50 @@ export default function BuyerOrdersPage() {
   const [comment, setComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const token = localStorage.getItem("khetse_token");
-        if (!token) {
-          setError("Please log in to view your orders.");
-          setLoading(false);
-          return;
-        }
-        const response = await fetch("https://khetse-backend.onrender.com/api/orders/myorders", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!response.ok) throw new Error("Failed to fetch orders");
-        const data = await response.json();
-        
-        // Sort newest first
-        setOrders(data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-      } catch (err: any) {
-        setError("Could not load your orders at this time.");
-      } finally {
-        setLoading(false);
+  const fetchOrders = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
+    try {
+      const token = localStorage.getItem("khetse_token");
+      if (!token) {
+        setError("Please log in to view your orders.");
+        if (showLoading) setLoading(false);
+        return;
       }
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/myorders`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (!response.ok) throw new Error("Failed to fetch orders");
+      const data = await response.json();
+      
+      // Sort newest first
+      setOrders(data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    } catch (err: any) {
+      if (showLoading) setError("Could not load your orders at this time.");
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  };
+
+  //  3. INITIAL LOAD (Runs once when buyer opens the page)
+  useEffect(() => {
+    fetchOrders(true);
+  }, []);
+
+  //  4. THE REAL-TIME MAGIC LISTENER
+  useEffect(() => {
+    socket.connect();
+
+    socket.on("orderUpdated", () => {
+      console.log("🔄 Order status changed by farmer! Refreshing data silently...");
+      fetchOrders(false); // Fetches data silently without showing the loading spinner!
+    });
+
+    return () => {
+      socket.off("orderUpdated");
+      socket.disconnect();
     };
-    fetchOrders();
   }, []);
 
   // --- NEW: RATING FUNCTIONS ---
@@ -68,7 +89,7 @@ export default function BuyerOrdersPage() {
     setSubmittingReview(true);
 
     try {
-      const res = await fetch(`https://khetse-backend.onrender.com/api/produce/${selectedProduce?.id}/reviews`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/produce/${selectedProduce?.id}/reviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -193,8 +214,8 @@ export default function BuyerOrdersPage() {
       ) : (
         
         /* ==========================================
-           VIEW 1: MAIN LIST VIEW
-           ========================================== */
+            VIEW 1: MAIN LIST VIEW
+            ========================================== */
         <>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>

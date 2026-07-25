@@ -32,14 +32,15 @@ export default function CartPage() {
     }
     setMounted(true);
 
-// Fetch the buyer's saved location for delivery math
+    // Fetch the buyer's saved location for delivery math
     const fetchLogisticsData = async () => {
       const token = localStorage.getItem("khetse_token");
       if (!token) return;
 
       setIsCalculatingLocation(true);
       try {
-        const profileRes = await fetch("https://khetse-backend.onrender.com/api/users/profile", {
+        // 🟢 UPDATED TO LOCAL/LIVE DYNAMIC URL
+        const profileRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -47,18 +48,15 @@ export default function CartPage() {
           const data = await profileRes.json();
           
           if (data.location?.lat) {
-            // They have a location, run the math!
             setBuyerLocation(data.location);
             calculateDeliveryRoute(data.location);
             
-            // NEW: Friendly reminder to verify their address every time they enter the cart
             toast("📍 Delivery set to your last location.", {
               description: "Please click 'Change' in the Delivery Routing box if you need to update it.",
               duration: 5000,
             });
             
           } else {
-            // NEW: If they have absolutely no location, physically force the map modal open!
             setIsChangingLocation(true);
             toast.error("Delivery address missing!", {
               description: "Please pin your destination so we can calculate your delivery fee.",
@@ -76,19 +74,17 @@ export default function CartPage() {
     fetchLogisticsData();
   }, []);
 
-  // NEW: Multi-Vendor Route Calculation
+  // Multi-Vendor Route Calculation
   const calculateDeliveryRoute = async (buyerCoords: { lat: number; lng: number }) => {
     try {
       setIsCalculatingLocation(true);
       const token = localStorage.getItem("khetse_token");
       
-      // 1. Group the cart items by unique farmers
       const uniqueFarmers = Array.from(new Set(cartItems.map(item => item.farmerName)));
       
       let totalAccumulatedDistance = 0;
-      const tempBreakdown = []; // Array to hold individual math
+      const tempBreakdown = []; 
 
-      // 2. Calculate the route for EACH farmer independently
       for (const farmer of uniqueFarmers) {
         
         const farmerItem = cartItems.find(item => item.farmerName === farmer);
@@ -100,7 +96,8 @@ export default function CartPage() {
 
         const realFarmerCoords = farmerItem.farmerLocation;
 
-        const res = await fetch("https://khetse-backend.onrender.com/api/map/route", {
+        // 🟢 UPDATED TO LOCAL/LIVE DYNAMIC URL
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/map/route`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -118,11 +115,10 @@ export default function CartPage() {
           const data = await res.json();
           if (data.distance) {
             const dist = parseFloat(data.distance);
-            const fee = Math.ceil(dist * COST_PER_KM); // Calculate fee for this specific farmer
+            const fee = Math.ceil(dist * COST_PER_KM); 
             
             totalAccumulatedDistance += dist;
             
-            // Save the exact math for this farmer
             tempBreakdown.push({
               farmerName: farmer,
               distance: dist,
@@ -132,7 +128,6 @@ export default function CartPage() {
         }
       }
 
-      // 3. Set the final combined distance and the breakdown!
       setDeliveryDistance(totalAccumulatedDistance);
       setDeliveryBreakdown(tempBreakdown);
       
@@ -181,7 +176,8 @@ export default function CartPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://khetse-backend.onrender.com/api/orders/bulk", {
+      // 🟢 UPDATED TO LOCAL/LIVE DYNAMIC URL - THIS FIXES THE FARMER UPDATE BUG!
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/bulk`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -222,7 +218,7 @@ export default function CartPage() {
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantityOrdered, 0);
   const produceSubtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantityOrdered), 0);
   
-  // Dynamic Delivery Fee (Only calculated if we successfully got a distance)
+  // Dynamic Delivery Fee
   const deliveryFee = deliveryDistance ? Math.ceil(deliveryDistance * COST_PER_KM) : 0;
   const grandTotal = produceSubtotal + deliveryFee;
 
@@ -375,7 +371,6 @@ export default function CartPage() {
                     )}
                   </div>
                   
-                  {/* NEW: The Transparent Breakdown UI */}
                   {deliveryBreakdown.length > 0 && (
                     <div className="pl-3 border-l-2 border-emerald-100 space-y-1 text-xs text-zinc-500">
                       {deliveryBreakdown.map((route, idx) => (
@@ -407,12 +402,11 @@ export default function CartPage() {
         </div>
       )}
 
-      {/* NEW: The Floating Map Modal */}
+      {/* The Floating Map Modal */}
       {isChangingLocation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
             
-            {/* Modal Header */}
             <div className="px-6 py-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
               <div>
                 <h3 className="font-bold text-zinc-900 text-lg">Pin Delivery Destination</h3>
@@ -426,7 +420,6 @@ export default function CartPage() {
               </button>
             </div>
             
-            {/* Modal Body */}
             <div className="p-6 bg-zinc-50/50">
               <LocationPicker 
                 onLocationSelect={(lat, lng) => {
@@ -435,7 +428,6 @@ export default function CartPage() {
                 }} 
               />
               
-              {/* NEW: Dedicated Confirm Button */}
               <button
                 onClick={() => setIsChangingLocation(false)}
                 className="mt-6 w-full rounded-xl bg-zinc-900 py-3.5 text-sm font-bold text-white shadow-md shadow-zinc-900/20 hover:bg-zinc-800 active:scale-[0.98] transition-all flex justify-center items-center gap-2"

@@ -39,6 +39,10 @@ const createOrder = async (req, res) => {
     }
     await produceItem.save();
 
+    // 🟢 ADDED THIS: Instantly tell the Farmer they have a new order!
+    const io = req.app.get('io');
+    if (io) io.emit('orderUpdated');
+
     res.status(201).json(order);
   } catch (error) {
     res.status(500).json({ message: 'Failed to place order', error: error.message });
@@ -82,6 +86,10 @@ const createBulkOrders = async (req, res) => {
 
       createdOrders.push(order);
     }
+
+    // 🟢 ADDED THIS: Instantly tell the Farmer about the bulk order!
+    const io = req.app.get('io');
+    if (io) io.emit('orderUpdated');
 
     res.status(201).json(createdOrders);
   } catch (error) {
@@ -135,6 +143,10 @@ const updateOrderStatus = async (req, res) => {
 
     order.status = status;
     await order.save();
+
+    // 🟢 ADDED THIS: Instantly tell the Buyer that their order was accepted/declined!
+    const io = req.app.get('io');
+    if (io) io.emit('orderUpdated');
 
     res.status(200).json(order);
   } catch (error) {

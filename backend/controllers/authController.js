@@ -10,7 +10,7 @@ try {
   initializeApp({
     credential: cert(serviceAccount)
   });
-  console.log('✅ Firebase Admin Initialized');
+  console.log('Firebase Admin Initialized');
 } catch (error) {
   console.error('🔥 ACTUAL FIREBASE ERROR:', error.message);
   console.warn('⚠️ Firebase Admin not initialized yet.');

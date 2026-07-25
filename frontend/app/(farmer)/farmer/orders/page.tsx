@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { socket } from "@/lib/socket";
 import { FarmerOrderCard } from "@/components/farmer/order-card";
 import { Package, AlertCircle, ArrowLeft, ChevronRight, User, Clock } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
@@ -22,7 +23,8 @@ export default function FarmerOrdersPage() {
         return;
       }
       
-      const response = await fetch("https://khetse-backend.onrender.com/api/orders/sales", {
+      // 🟢 UPDATED THIS LINE: Switched to NEXT_PUBLIC_API_URL and used backticks
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/sales`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -37,8 +39,29 @@ export default function FarmerOrdersPage() {
     }
   };
 
+  // 1. Initial Fetch
   useEffect(() => {
     fetchOrders(true);
+  }, []);
+
+  // 2. Real-Time WebSockets Setup
+  useEffect(() => {
+    socket.connect();
+
+    socket.on("connect", () => {
+      console.log("🟢 Successfully connected to WebSockets!", socket.id);
+    });
+
+    // ✨ THE MAGIC: When the server says an order changed, silently fetch the new data!
+    socket.on("orderUpdated", () => {
+      console.log("🔄 Real-time update received! Refreshing orders...");
+      fetchOrders(false); 
+    });
+
+    return () => {
+      socket.off("orderUpdated");
+      socket.disconnect();
+    };
   }, []);
 
   if (loading) {
