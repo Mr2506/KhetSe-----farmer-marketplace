@@ -103,8 +103,13 @@ const getProduceById = async (req, res) => {
 
 const createProduceReview = async (req, res) => {
   try {
-    const { rating, comment } = req.body;
+    //  NEW: Pull the orderId from the frontend request
+    const { rating, comment, orderId } = req.body; 
     const produceId = req.params.id;
+
+    if (!orderId) {
+      return res.status(400).json({ message: 'Order ID is required to submit a review.' });
+    }
 
     const produce = await Produce.findById(produceId);
 
@@ -112,14 +117,14 @@ const createProduceReview = async (req, res) => {
       return res.status(404).json({ message: 'Produce not found' });
     }
 
-    // 🛡️ THE ANTI-SPAM SHIELD 🛡️
-    // Look through the existing reviews to see if this user's ID is already there
+    //  THE NEW ANTI-SPAM SHIELD 
+    // Check if this SPECIFIC order has already been reviewed
     const alreadyReviewed = produce.reviews.find(
-      (review) => review.user.toString() === req.user._id.toString()
+      (review) => review.orderId && review.orderId.toString() === orderId.toString()
     );
 
     if (alreadyReviewed) {
-      return res.status(400).json({ message: 'You have already reviewed this crop!' });
+      return res.status(400).json({ message: 'You have already reviewed this specific order!' });
     }
 
     // 1. Package the new review
@@ -128,6 +133,7 @@ const createProduceReview = async (req, res) => {
       name: `${req.user.firstName} ${req.user.lastName}`,
       rating: Number(rating),
       comment: comment || "", 
+      orderId: orderId, //  NEW: Save the orderId into the review
     };
 
     // 2. Push it into the crop's new reviews array
@@ -138,6 +144,15 @@ const createProduceReview = async (req, res) => {
     produce.rating = produce.reviews.reduce((acc, item) => item.rating + acc, 0) / produce.reviews.length;
 
     await produce.save();
+
+    //  4. NEW: Find the Order and mark it as rated so the button disappears
+    const Order = require('../models/Order'); // Pull in the Order model
+    const order = await Order.findById(orderId);
+    if (order) {
+      order.isRated = true;
+      await order.save();
+    }
+
     res.status(201).json({ message: 'Review added successfully' });
   } catch (error) {
     console.error("Review Error:", error);

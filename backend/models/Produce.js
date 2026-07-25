@@ -6,6 +6,8 @@ const reviewSchema = mongoose.Schema(
     name: { type: String, required: true },
     rating: { type: Number, required: true },
     comment: { type: String, required: false },
+    //  NEW: Attach the specific order ID to the review
+    orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' }  
   },
   { timestamps: true }
 );

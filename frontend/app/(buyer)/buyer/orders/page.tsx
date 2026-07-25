@@ -18,7 +18,7 @@ export default function BuyerOrdersPage() {
 
   // --- NEW: RATING MODAL STATES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduce, setSelectedProduce] = useState<{ id: string; name: string } | null>(null);
+  const [selectedProduce, setSelectedProduce] = useState<{ produceId: string; name: string; orderId: string } | null>(null);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -71,8 +71,8 @@ export default function BuyerOrdersPage() {
   }, []);
 
   // --- NEW: RATING FUNCTIONS ---
-  const openReviewModal = (produceId: string, cropName: string) => {
-    setSelectedProduce({ id: produceId, name: cropName });
+  const openReviewModal = (produceId: string, cropName: string, orderId: string) => {
+    setSelectedProduce({ produceId, name: cropName, orderId });
     setRating(0);
     setHoverRating(0);
     setComment("");
@@ -89,18 +89,23 @@ export default function BuyerOrdersPage() {
     setSubmittingReview(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/produce/${selectedProduce?.id}/reviews`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/produce/${selectedProduce?.produceId}/reviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ rating, comment }),
+        body: JSON.stringify({ 
+          rating, 
+          comment,
+          orderId: selectedProduce?.orderId
+        }),
       });
 
       if (res.ok) {
         toast.success(`You rated ${selectedProduce?.name} ${rating} stars!`);
         setIsModalOpen(false);
+        fetchOrders(false); 
       } else {
         const errorData = await res.json();
         toast.error(errorData.message || "Failed to submit review");
@@ -145,7 +150,7 @@ export default function BuyerOrdersPage() {
   // --- GROUP ORDERS BY CHECKOUT SESSION ---
   const groupedOrders = orders.reduce((acc: any[], order: any) => {
     const orderTime = new Date(order.createdAt).getTime();
-    const existingGroup = acc.find(g => Math.abs(g.timestamp - orderTime) < 10000); 
+    const existingGroup = acc.find((g: any) => Math.abs(g.timestamp - orderTime) < 10000); 
     
     if (existingGroup) {
       existingGroup.items.push(order);
@@ -185,28 +190,17 @@ export default function BuyerOrdersPage() {
           <div className="border-b border-zinc-200 pb-5">
             <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-1">Order Session</p>
             <h1 className="text-2xl font-bold text-zinc-900 sm:text-3xl tracking-tight">
-              {groupedOrders.find(g => g.id === selectedGroupId)?.title}
+              {groupedOrders.find((g: any) => g.id === selectedGroupId)?.title}
             </h1>
             <p className="mt-1 text-sm font-medium text-zinc-500">
-              {groupedOrders.find(g => g.id === selectedGroupId)?.items.length} items · Total: <span className="text-emerald-700">{formatCurrency(groupedOrders.find(g => g.id === selectedGroupId)?.items.reduce((sum: number, order: any) => sum + (order.totalPrice || 0), 0))}</span>
+              {groupedOrders.find((g: any) => g.id === selectedGroupId)?.items.length} items · Total: <span className="text-emerald-700">{formatCurrency(groupedOrders.find((g: any) => g.id === selectedGroupId)?.items.reduce((sum: number, order: any) => sum + (order.totalPrice || 0), 0))}</span>
             </p>
           </div>
 
           <div className="space-y-4">
-            {groupedOrders.find(g => g.id === selectedGroupId)?.items.map((order: any) => (
+            {groupedOrders.find((g: any) => g.id === selectedGroupId)?.items.map((order: any) => (
               <div key={order._id} className="relative">
                 <BuyerOrderCard order={order} onRate={openReviewModal} />
-                {/* INJECTED: The Rate Button right under the card */}
-                {order.items?.map((item: any, idx: number) => (
-                   <button
-                     key={idx}
-                     onClick={() => openReviewModal(item.produceId, item.cropName)}
-                     className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-600 shadow-sm hover:border-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-colors ml-4"
-                   >
-                     <Star className="h-3.5 w-3.5" />
-                     Rate {item.cropName || "this Crop"}
-                   </button>
-                ))}
               </div>
             ))}
           </div>

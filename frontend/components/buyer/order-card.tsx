@@ -13,7 +13,8 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> =
   Cancelled: { bg: "bg-zinc-100",    text: "text-zinc-500",   dot: "bg-zinc-400" },
 };
 
-export function BuyerOrderCard({ order, onRate }: { order: any, onRate?: (produceId: string, cropName: string) => void }) {
+//  FIX 1: Added orderId to the onRate function signature
+export function BuyerOrderCard({ order, onRate }: { order: any, onRate?: (produceId: string, cropName: string, orderId: string) => void }) {
   const dateStr = order.createdAt ? formatDate(order.createdAt) : "Recently";
   const style = STATUS_STYLES[order.status] ?? { bg: "bg-zinc-100", text: "text-zinc-600", dot: "bg-zinc-400" };
   const isTerminal = order.status === "Delivered" || order.status === "Cancelled";
@@ -72,13 +73,15 @@ export function BuyerOrderCard({ order, onRate }: { order: any, onRate?: (produc
         <div className="flex flex-col md:items-end justify-between gap-4">
           <p className="text-xs text-zinc-400">Ordered {dateStr}</p>
           
-          {(order.status === "Delivered" || order.status === "Placed" || order.status === "Confirmed") && order.produceItem?._id && onRate && (
+          {/*  FIX 2: Only show if Delivered AND not yet rated */}
+          {order.status === "Delivered" && !order.isRated && order.produceItem?._id && onRate && (
             <button
-              onClick={() => onRate(order.produceItem._id, order.produceItem.name)}
+              /*  FIX 3: Pass order._id into the onRate function */
+              onClick={() => onRate(order.produceItem._id, order.produceItem.name, order._id)}
               className="inline-flex items-center gap-2 rounded-sm border border-zinc-200 px-4 py-2 text-xs font-medium text-zinc-700 hover:border-[#EF9F27] hover:text-[#EF9F27] transition-colors bg-white mt-auto"
             >
               <Star className="h-3.5 w-3.5" />
-              Rate Crop
+              Rate Order
             </button>
           )}
         </div>
