@@ -73,7 +73,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
       if (!token) return;
 
       try {
-        const res = await fetch("https://khetse-backend.onrender.com/api/users/profile", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

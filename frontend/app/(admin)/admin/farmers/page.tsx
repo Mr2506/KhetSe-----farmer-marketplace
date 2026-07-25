@@ -14,7 +14,7 @@ export default function AdminFarmersPage() {
         const token = localStorage.getItem("khetse_token");
         if (!token) return;
 
-        const res = await fetch("https://khetse-backend.onrender.com/api/admin/farmers", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/farmers`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
