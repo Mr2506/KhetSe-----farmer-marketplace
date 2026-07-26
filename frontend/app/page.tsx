@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Leaf, ArrowRight, ArrowDown, Search, ShoppingCart, ShoppingBag, ChevronDown, Sparkles, ShieldCheck, TrendingUp } from "lucide-react";
 import { HomeHeader } from "@/components/home/home-header";
+import { SiteFooter } from "@/components/home/site-footer";
 
 export default function LandingPage() {
   const faqs = [
@@ -23,7 +24,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#f6f4ef] text-zinc-900 pb-24 font-sans overflow-x-hidden">
+    <main className="min-h-screen bg-[#f6f4ef] text-zinc-900 font-sans">
       
       {/* Top Navbar Header */}
       <HomeHeader />
@@ -32,7 +33,6 @@ export default function LandingPage() {
       <div className="mx-auto w-full max-w-[1400px] px-4 pt-6 sm:px-6 lg:pt-10">
         <div className="relative overflow-hidden flex flex-col justify-center rounded-3xl border border-emerald-600/20 bg-white p-8 shadow-[0_10px_40px_rgba(45,138,78,0.08)] sm:p-12 lg:p-16">
           
-          {/* Subtle background glow blob */}
           <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none" />
 
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/80 bg-emerald-50/80 px-4 py-1.5 text-sm font-semibold text-emerald-800 shadow-xs backdrop-blur-xs">
@@ -90,8 +90,8 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* --- SECTION 2: NO MIDDLEMEN (Visual Graphic) --- */}
-      <div className="mx-auto w-full max-w-[1400px] px-4 pt-20 sm:px-6 lg:pt-28">
+      {/* --- SECTION 2: NO MIDDLEMEN --- */}
+      <div id="about" className="mx-auto w-full max-w-[1400px] px-4 pt-20 sm:px-6 lg:pt-28">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-emerald-700 bg-emerald-100/70 px-3 py-1 rounded-full border border-emerald-200">
             Transparent Pricing
@@ -183,8 +183,8 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* --- SECTION 3: HOW IT WORKS (3 Simple Steps) --- */}
-      <div className="mx-auto w-full max-w-[1400px] px-4 pt-24 sm:px-6 lg:pt-32">
+      {/* --- SECTION 3: HOW IT WORKS --- */}
+      <div id="how-it-works" className="mx-auto w-full max-w-[1400px] px-4 pt-24 sm:px-6 lg:pt-32">
         <div className="text-center mb-12">
           <p className="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-2 bg-emerald-100/60 w-fit mx-auto px-3 py-1 rounded-full">
             For Buyers
@@ -195,7 +195,6 @@ export default function LandingPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {/* Step 1 */}
           <div className="rounded-3xl border border-zinc-200/90 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 mb-6 shadow-sm">
               <Search className="h-8 w-8" />
@@ -205,7 +204,6 @@ export default function LandingPage() {
             <p className="mt-2.5 text-sm leading-relaxed text-zinc-500">Filter by crop, farm distance, or organic certification. Compare direct farm prices side by side.</p>
           </div>
 
-          {/* Step 2 */}
           <div className="rounded-3xl border border-zinc-200/90 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 mb-6 shadow-sm">
               <ShoppingCart className="h-8 w-8" />
@@ -215,7 +213,6 @@ export default function LandingPage() {
             <p className="mt-2.5 text-sm leading-relaxed text-zinc-500">Select how many kilograms you need, add to cart, and confirm your order direct with local farmers.</p>
           </div>
 
-          {/* Step 3 */}
           <div className="rounded-3xl border border-zinc-200/90 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 mb-6 shadow-sm">
               <ShoppingBag className="h-8 w-8" />
@@ -227,8 +224,8 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* --- SECTION 4: FREQUENTLY ASKED QUESTIONS --- */}
-      <div className="mx-auto w-full max-w-4xl px-4 pt-24 sm:px-6 lg:pt-32 mb-10">
+      {/* --- SECTION 4: FAQS --- */}
+      <div id="faqs" className="mx-auto w-full max-w-4xl px-4 pt-24 pb-24 sm:px-6 lg:pt-32">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black tracking-tight text-zinc-950">Frequently Asked Questions</h2>
         </div>
@@ -250,6 +247,8 @@ export default function LandingPage() {
           ))}
         </div>
       </div>
+
+   <SiteFooter />
 
     </main>
   );

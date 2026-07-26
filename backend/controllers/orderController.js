@@ -39,7 +39,7 @@ const createOrder = async (req, res) => {
     }
     await produceItem.save();
 
-    // 🟢 ADDED THIS: Instantly tell the Farmer they have a new order!
+    //  ADDED THIS: Instantly tell the Farmer they have a new order!
     const io = req.app.get('io');
     if (io) io.emit('orderUpdated');
 
@@ -87,7 +87,7 @@ const createBulkOrders = async (req, res) => {
       createdOrders.push(order);
     }
 
-    // 🟢 ADDED THIS: Instantly tell the Farmer about the bulk order!
+    //  ADDED THIS: Instantly tell the Farmer about the bulk order!
     const io = req.app.get('io');
     if (io) io.emit('orderUpdated');
 
@@ -116,7 +116,8 @@ const getMyOrders = async (req, res) => {
 const getFarmerSales = async (req, res) => {
   try {
     const orders = await Order.find({ farmer: req.user._id })
-      .populate('produceItem', 'name')
+      //  FIX: Added 'photos' and 'unit' so the farmer dashboard has the full details!
+      .populate('produceItem', 'name photos unit')
       .populate('buyer', 'firstName lastName phone cityArea'); 
       
     res.status(200).json(orders);
@@ -144,7 +145,7 @@ const updateOrderStatus = async (req, res) => {
     order.status = status;
     await order.save();
 
-    // 🟢 ADDED THIS: Instantly tell the Buyer that their order was accepted/declined!
+    //  ADDED THIS: Instantly tell the Buyer that their order was accepted/declined!
     const io = req.app.get('io');
     if (io) io.emit('orderUpdated');
 

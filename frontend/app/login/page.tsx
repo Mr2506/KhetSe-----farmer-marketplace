@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { auth } from "@/lib/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -156,12 +157,13 @@ export default function LoginPage() {
         </div>
 
         <div className="relative">
-          <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm">
-              <Leaf className="h-5 w-5 text-emerald-300" />
+          {/* 🟢 CHANGED: Desktop logo is now a clickable Link */}
+          <Link href="/" className="flex items-center gap-3 w-fit group cursor-pointer">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+              <Leaf className="h-5 w-5 text-emerald-300 transition-transform group-hover:scale-110" />
             </div>
-            <span className="text-xl font-bold tracking-tight">KhetSe</span>
-          </div>
+            <span className="text-xl font-bold tracking-tight group-hover:text-emerald-100 transition-colors">KhetSe</span>
+          </Link>
         </div>
 
         <div className="relative space-y-6">
@@ -199,13 +201,14 @@ export default function LoginPage() {
       {/* Right panel — form */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-[400px]">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-10 lg:hidden">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-600 text-white">
-              <Leaf className="h-5 w-5" />
+          
+          {/* 🟢 CHANGED: Mobile logo is now a clickable Link */}
+          <Link href="/" className="flex items-center gap-2 mb-10 lg:hidden w-fit group cursor-pointer">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-600 text-white group-hover:bg-emerald-500 transition-colors">
+              <Leaf className="h-5 w-5 transition-transform group-hover:scale-110" />
             </div>
-            <span className="text-lg font-bold text-zinc-900">KhetSe</span>
-          </div>
+            <span className="text-lg font-bold text-zinc-900 group-hover:text-emerald-700 transition-colors">KhetSe</span>
+          </Link>
 
           {message && (
             <div className={`mb-6 flex items-start gap-3 rounded-2xl p-4 text-sm font-medium border ${message.type === "error"
@@ -232,7 +235,7 @@ export default function LoginPage() {
                   <label className="block text-xs font-semibold text-zinc-600 mb-2 uppercase tracking-wider">
                     Phone Number
                   </label>
-                  <div className="flex rounded-xl overflow-hidden border border-zinc-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all">
+                  <div className="flex rounded-xl overflow-hidden border border-zinc-300 focus-within:border-emerald-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all">
                     <div className="flex items-center justify-center bg-zinc-50 border-r border-zinc-300 px-4 py-3 text-zinc-700 font-semibold text-sm shrink-0">
                       +91
                     </div>
