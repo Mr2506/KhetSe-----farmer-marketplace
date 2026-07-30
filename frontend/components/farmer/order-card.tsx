@@ -13,7 +13,7 @@ const STATUS_STYLES: Record<string, string> = {
   Delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
   Cancelled: "bg-red-50 text-red-700 border-red-200",
 };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function FarmerOrderCard({ order, onUpdate }: { order: any; onUpdate?: () => void }) {
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +29,7 @@ export function FarmerOrderCard({ order, onUpdate }: { order: any; onUpdate?: ()
   async function setStatus(status: string) {
     setLoading(true);
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/status`, {
         method: "PUT",

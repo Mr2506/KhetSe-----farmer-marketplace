@@ -49,7 +49,7 @@ export function FarmerListingRow({ listing, onRefresh }: { listing: Listing; onR
   async function save(field: "price" | "quantity") {
     setLoading(true);
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       const updateData = field === "price" ? { pricePerUnit: price } : { quantityAvailable: qty };
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/produce/${listing._id}`, {
         method: "PUT",
@@ -70,7 +70,7 @@ export function FarmerListingRow({ listing, onRefresh }: { listing: Listing; onR
     setLoading(true);
     setMenuOpen(false);
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/produce/${listing._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -91,7 +91,7 @@ export function FarmerListingRow({ listing, onRefresh }: { listing: Listing; onR
     setLoading(true);
     setMenuOpen(false);
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/produce/${listing._id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },

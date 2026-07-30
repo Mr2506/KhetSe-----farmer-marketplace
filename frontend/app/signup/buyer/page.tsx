@@ -107,10 +107,10 @@ export default function BuyerSignup() {
       }
 
       // 3. Save Backend Token and Redirect!
-      localStorage.setItem("khetse_token", data.token);
-      localStorage.setItem("khetse_role", data.role);
+      localStorage.setItem("KhetConnect_token", data.token);
+      localStorage.setItem("KhetConnect_role", data.role);
       
-      setMessage({ text: "Account created! Welcome to KhetSe.", type: "success" });
+      setMessage({ text: "Account created! Welcome to KhetConnect.", type: "success" });
       
       setTimeout(() => {
         router.push("/buyer");
@@ -133,7 +133,7 @@ export default function BuyerSignup() {
               <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">KhetSe</h1>
+          <h1 className="text-2xl font-bold text-gray-900">KhetConnect</h1>
         </div>
 
         {message && (

@@ -11,7 +11,7 @@ export default function FarmerProfilePage() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) return;
 
       try {

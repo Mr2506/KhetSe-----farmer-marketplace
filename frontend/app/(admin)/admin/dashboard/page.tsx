@@ -19,7 +19,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("khetse_token");
+        const token = localStorage.getItem("KhetConnect_token");
         if (!token) return;
 
         // Fetch Stats and Orders from our Express Backend simultaneously
@@ -67,7 +67,7 @@ export default function AdminDashboardPage() {
           <p className="text-xs font-bold uppercase tracking-widest text-emerald-600">Live Overview</p>
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Platform Dashboard</h1>
-        <p className="text-sm text-zinc-500 mt-1">Real-time health metrics for the KhetSe marketplace</p>
+        <p className="text-sm text-zinc-500 mt-1">Real-time health metrics for the KhetConnect marketplace</p>
       </div>
 
       {/* Stats grid */}

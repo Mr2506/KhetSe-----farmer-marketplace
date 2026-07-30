@@ -29,7 +29,7 @@ export function PageShell({
             <div className="grid h-9 w-9 place-items-center rounded-xl bg-[#22c55e] text-black shadow-lg shadow-emerald-500/10">
               <Leaf className="h-5 w-5 fill-current" />
             </div>
-            <span className="text-xl font-bold text-zinc-950 tracking-tight">KhetSe</span>
+            <span className="text-xl font-bold text-zinc-950 tracking-tight">KhetConnect</span>
           </Link>
 
           {/* Navigation Links */}

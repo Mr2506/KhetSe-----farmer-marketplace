@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, X, Leaf, User } from "lucide-react";
+import { Menu, X, Leaf, User, Sparkles, Map, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -33,35 +33,40 @@ export function HomeHeader() {
               </div>
               <div>
                 <p className="text-lg font-bold tracking-tight text-zinc-900 group-hover:text-emerald-700 transition-colors">
-                  KhetSe
+                  KhetConnect
                 </p>
                 <p className="hidden sm:block text-[11px] text-zinc-500 font-medium">Direct Farm Marketplace</p>
               </div>
             </Link>
           </div>
 
-          {/* 🟢 DESKTOP NAV: Using replace so the Back button works perfectly! */}
-          <nav className="hidden md:flex flex-1 items-center justify-center gap-8">
+          {/* 🌟 ULTRA-PREMIUM DESKTOP UI: Icons, 3D lift, and glassmorphism glow */}
+          <nav className="hidden md:flex flex-1 items-center justify-center gap-3">
             <Link 
               href="#about" 
               replace
-              className="text-sm font-bold text-zinc-500 hover:text-emerald-700 transition-colors"
+              className="group flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/60 px-4 py-2 text-sm font-bold text-zinc-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50/80 hover:text-emerald-700 hover:shadow-md hover:shadow-emerald-500/10"
             >
-              Why KhetSe?
+              <Sparkles className="h-4 w-4 text-emerald-500/70 transition-colors group-hover:text-emerald-600" />
+              <span>Why KhetConnect?</span>
             </Link>
+            
             <Link 
               href="#how-it-works" 
               replace
-              className="text-sm font-bold text-zinc-500 hover:text-emerald-700 transition-colors"
+              className="group flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/60 px-4 py-2 text-sm font-bold text-zinc-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50/80 hover:text-emerald-700 hover:shadow-md hover:shadow-emerald-500/10"
             >
-              How to Use
+              <Map className="h-4 w-4 text-emerald-500/70 transition-colors group-hover:text-emerald-600" />
+              <span>How to Use</span>
             </Link>
+            
             <Link 
               href="#faqs" 
               replace
-              className="text-sm font-bold text-zinc-500 hover:text-emerald-700 transition-colors"
+              className="group flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/60 px-4 py-2 text-sm font-bold text-zinc-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50/80 hover:text-emerald-700 hover:shadow-md hover:shadow-emerald-500/10"
             >
-              FAQs
+              <HelpCircle className="h-4 w-4 text-emerald-500/70 transition-colors group-hover:text-emerald-600" />
+              <span>FAQs</span>
             </Link>
           </nav>
 
@@ -100,7 +105,7 @@ export function HomeHeader() {
                     <Leaf className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-base font-bold tracking-tight">KhetSe</p>
+                    <p className="text-base font-bold tracking-tight">KhetConnect</p>
                     <p className="text-[10px] text-zinc-400 font-medium">Gujarat Direct Farm</p>
                   </div>
                 </div>
@@ -117,31 +122,42 @@ export function HomeHeader() {
 
               <div className="flex flex-1 flex-col gap-1.5 text-sm font-semibold">
                 
-                {/* 🟢 MOBILE NAV: Also using replace, and closing the menu when clicked */}
-                <div className="flex flex-col gap-4 px-2 py-4">
+                {/* 🌟 UPGRADED MOBILE UI: Matching icons and layout block styles */}
+                <div className="flex flex-col gap-3 px-2 py-4">
                   <Link 
                     href="#about" 
                     replace 
                     onClick={closeMenu} 
-                    className="text-left text-zinc-600 hover:text-emerald-700 text-lg"
+                    className="group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50/50 px-4 py-3.5 text-left text-zinc-600 transition-all hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 hover:shadow-sm"
                   >
-                    Why KhetSe?
+                    <div className="grid h-8 w-8 place-items-center rounded-xl bg-white shadow-sm border border-zinc-200/60 group-hover:bg-emerald-100/50 group-hover:border-emerald-200 transition-colors">
+                       <Sparkles className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <span className="font-bold">Why KhetConnect?</span>
                   </Link>
+
                   <Link 
                     href="#how-it-works" 
                     replace 
                     onClick={closeMenu} 
-                    className="text-left text-zinc-600 hover:text-emerald-700 text-lg"
+                    className="group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50/50 px-4 py-3.5 text-left text-zinc-600 transition-all hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 hover:shadow-sm"
                   >
-                    How to Use
+                    <div className="grid h-8 w-8 place-items-center rounded-xl bg-white shadow-sm border border-zinc-200/60 group-hover:bg-emerald-100/50 group-hover:border-emerald-200 transition-colors">
+                       <Map className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <span className="font-bold">How to Use</span>
                   </Link>
+
                   <Link 
                     href="#faqs" 
                     replace 
                     onClick={closeMenu} 
-                    className="text-left text-zinc-600 hover:text-emerald-700 text-lg"
+                    className="group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50/50 px-4 py-3.5 text-left text-zinc-600 transition-all hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 hover:shadow-sm"
                   >
-                    FAQs
+                    <div className="grid h-8 w-8 place-items-center rounded-xl bg-white shadow-sm border border-zinc-200/60 group-hover:bg-emerald-100/50 group-hover:border-emerald-200 transition-colors">
+                       <HelpCircle className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <span className="font-bold">FAQs</span>
                   </Link>
                 </div>
 

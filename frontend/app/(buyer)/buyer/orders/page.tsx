@@ -27,7 +27,7 @@ export default function BuyerOrdersPage() {
   const fetchOrders = async (showLoading = true) => {
     if (showLoading) setLoading(true);
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) {
         setError("Please log in to view your orders.");
         if (showLoading) setLoading(false);
@@ -85,7 +85,7 @@ export default function BuyerOrdersPage() {
       return;
     }
 
-    const token = localStorage.getItem("khetse_token");
+    const token = localStorage.getItem("KhetConnect_token");
     setSubmittingReview(true);
 
     try {

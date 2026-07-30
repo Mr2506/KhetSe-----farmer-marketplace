@@ -32,7 +32,7 @@ export function BuyerProfileForm({ defaultValues }: Props) {
     setLoading(true);
     
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) throw new Error("Not authenticated");
 
       let buyingFor = "My household";

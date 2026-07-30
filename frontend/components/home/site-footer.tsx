@@ -21,7 +21,7 @@ export function SiteFooter() {
                   <Leaf className="h-5 w-5" />
                 </div>
                 <span className="text-xl font-bold tracking-tight text-white group-hover:text-emerald-100 transition-colors">
-                  KhetSe
+                  KhetConnect
                 </span>
               </Link>
               <p className="mt-6 max-w-sm text-sm leading-relaxed text-zinc-400">
@@ -78,7 +78,7 @@ export function SiteFooter() {
           </div>
 
           <div className="mt-16 flex flex-col-reverse md:flex-row items-center justify-between gap-4 border-t border-zinc-800/80 pt-8 text-xs font-medium text-zinc-500">
-            <p>&copy; {new Date().getFullYear()} KhetSe Marketplace. All rights reserved. Built in Gujarat.</p>
+            <p>&copy; {new Date().getFullYear()} KhetConnect Marketplace. All rights reserved. Built in Gujarat.</p>
             <div className="rounded-md border border-zinc-700 bg-zinc-800/50 px-3 py-1.5 font-mono tracking-widest text-zinc-300 uppercase shadow-xs">
               Beta Program
             </div>
@@ -106,10 +106,10 @@ export function SiteFooter() {
 
             <div className="space-y-6 text-zinc-600 leading-relaxed text-sm sm:text-base">
               <p>Last updated: July 2026</p>
-              <h2 className="text-lg font-bold text-zinc-900 mt-6 mb-2">1. Welcome to KhetSe</h2>
-              <p>By accessing or using the KhetSe platform, you agree to be bound by these Terms of Service. KhetSe is a direct farm-to-consumer marketplace designed to connect local farmers in Gujarat with buyers.</p>
+              <h2 className="text-lg font-bold text-zinc-900 mt-6 mb-2">1. Welcome to KhetConnect</h2>
+              <p>By accessing or using the KhetConnect platform, you agree to be bound by these Terms of Service. KhetConnect is a direct farm-to-consumer marketplace designed to connect local farmers in Gujarat with buyers.</p>
               <h2 className="text-lg font-bold text-zinc-900 mt-6 mb-2">2. Platform Role</h2>
-              <p>KhetSe provides a technological platform for Buyers to discover and purchase agricultural produce directly from Farmers. KhetSe is not a party to the actual transaction between buyers and sellers, nor do we handle or store any physical produce.</p>
+              <p>KhetConnect provides a technological platform for Buyers to discover and purchase agricultural produce directly from Farmers. KhetConnect is not a party to the actual transaction between buyers and sellers, nor do we handle or store any physical produce.</p>
               <h2 className="text-lg font-bold text-zinc-900 mt-6 mb-2">3. User Responsibilities</h2>
               <ul className="list-disc pl-5 space-y-2">
                 <li><strong>Farmers:</strong> Must provide accurate descriptions, pricing, and availability of their harvest. Farmers are responsible for fulfilling accepted orders.</li>
@@ -141,7 +141,7 @@ export function SiteFooter() {
             <div className="space-y-6 text-zinc-600 leading-relaxed text-sm sm:text-base">
               <p>Last updated: July 2026</p>
               <h2 className="text-lg font-bold text-zinc-900 mt-6 mb-2">1. Information We Collect</h2>
-              <p>When you use KhetSe, we collect the minimum amount of information necessary to facilitate direct farm transactions:</p>
+              <p>When you use KhetConnect, we collect the minimum amount of information necessary to facilitate direct farm transactions:</p>
               <ul className="list-disc pl-5 space-y-2">
                 <li><strong>Account Data:</strong> Your phone number, first name, last name, and role (Buyer or Farmer).</li>
                 <li><strong>Location Data:</strong> Your city/area or farm village to connect you with nearby users.</li>

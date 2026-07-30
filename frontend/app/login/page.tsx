@@ -71,7 +71,7 @@ export default function LoginPage() {
       setConfirmationResult(confirmation);
       setStep(2);
       setMessage({ text: "OTP Sent successfully!", type: "success" });
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
       // Catch our custom error and show the exact message you wanted
@@ -114,8 +114,8 @@ export default function LoginPage() {
         throw new Error(data.message || "Login failed");
       }
 
-      localStorage.setItem("khetse_token", data.token);
-      localStorage.setItem("khetse_role", data.role);
+      localStorage.setItem("KhetConnect_token", data.token);
+      localStorage.setItem("KhetConnect_role", data.role);
 
       setMessage({ text: `Welcome back, ${data.firstName || 'User'}!`, type: "success" });
 
@@ -124,7 +124,7 @@ export default function LoginPage() {
         else if (data.role === "Farmer") router.push("/farmer");
         else router.push("/buyer");
       }, 1000);
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
       if (error.message.includes("not found")) {
@@ -162,7 +162,7 @@ export default function LoginPage() {
             <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
               <Leaf className="h-5 w-5 text-emerald-300 transition-transform group-hover:scale-110" />
             </div>
-            <span className="text-xl font-bold tracking-tight group-hover:text-emerald-100 transition-colors">KhetSe</span>
+            <span className="text-xl font-bold tracking-tight group-hover:text-emerald-100 transition-colors">KhetConnect</span>
           </Link>
         </div>
 
@@ -194,7 +194,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative">
-          <p className="text-emerald-400/60 text-xs">&copy; 2026 KhetSe. Built in Gujarat.</p>
+          <p className="text-emerald-400/60 text-xs">&copy; 2026 KhetConnect. Built in Gujarat.</p>
         </div>
       </div>
 
@@ -207,7 +207,7 @@ export default function LoginPage() {
             <div className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-600 text-white group-hover:bg-emerald-500 transition-colors">
               <Leaf className="h-5 w-5 transition-transform group-hover:scale-110" />
             </div>
-            <span className="text-lg font-bold text-zinc-900 group-hover:text-emerald-700 transition-colors">KhetSe</span>
+            <span className="text-lg font-bold text-zinc-900 group-hover:text-emerald-700 transition-colors">KhetConnect</span>
           </Link>
 
           {message && (
@@ -263,7 +263,7 @@ export default function LoginPage() {
               <div className="mt-10 mb-7">
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-px bg-zinc-200" />
-                  <span className="text-xs font-medium text-zinc-400 whitespace-nowrap">New to KhetSe?</span>
+                  <span className="text-xs font-medium text-zinc-400 whitespace-nowrap">New to KhetConnect?</span>
                   <div className="flex-1 h-px bg-zinc-200" />
                 </div>
               </div>

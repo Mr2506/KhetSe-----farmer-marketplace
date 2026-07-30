@@ -133,7 +133,7 @@ export const SEED_USERS: User[] = [
     notifications: { newOrders: true, lowStock: false, sms: false }
   },
   {
-    id: "admin1", phone: "9000000000", name: "Admin KhetSe", roles: ["ADMIN"],
+    id: "admin1", phone: "9000000000", name: "Admin KhetConnect", roles: ["ADMIN"],
     registeredAt: "2024-01-01",
   },
 ];
@@ -388,6 +388,6 @@ export const useAppStore = create<AppState>()(
         }));
       },
     }),
-    { name: "khetse-store" }
+    { name: "KhetConnect-store" }
   )
 );

@@ -11,7 +11,7 @@ export default function LandingPage() {
     },
     {
       q: "How do you guarantee the produce is fresh?",
-      a: "KhetSe cuts out the middlemen and storage warehouses entirely. The produce you buy on our platform is often harvested the exact same morning you receive it."
+      a: "KhetConnect cuts out the middlemen and storage warehouses entirely. The produce you buy on our platform is often harvested the exact same morning you receive it."
     },
     {
       q: "Is the produce certified organic?",
@@ -19,7 +19,7 @@ export default function LandingPage() {
     },
     {
       q: "How does the farmer get paid?",
-      a: "You pay the farmer directly upon delivery or pickup. KhetSe does not take massive commissions, ensuring the farmer keeps the money they deserve."
+      a: "You pay the farmer directly upon delivery or pickup. KhetConnect does not take massive commissions, ensuring the farmer keeps the money they deserve."
     }
   ];
 
@@ -37,7 +37,7 @@ export default function LandingPage() {
 
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/80 bg-emerald-50/80 px-4 py-1.5 text-sm font-semibold text-emerald-800 shadow-xs backdrop-blur-xs">
             <Sparkles className="h-4 w-4 text-emerald-600" />
-            KhetSe — Direct Farm Marketplace
+            KhetConnect — Direct Farm Marketplace
           </div>
           
           <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight text-zinc-950 sm:text-5xl lg:text-6xl xl:text-7xl">
@@ -100,7 +100,7 @@ export default function LandingPage() {
             No middlemen. Just farmers and you.
           </h2>
           <p className="mt-4 text-lg text-zinc-600 leading-relaxed">
-            KhetSe connects local farmers directly to your neighborhood — cutting out the agents and retailers who take 80% of the price difference.
+            KhetConnect connects local farmers directly to your neighborhood — cutting out the agents and retailers who take 80% of the price difference.
           </p>
         </div>
 
@@ -145,10 +145,10 @@ export default function LandingPage() {
           <p className="text-center text-xs text-zinc-500 mt-6 font-medium">The farmer receives ₹10 while you pay ₹50 — massive markup with zero benefit.</p>
         </div>
 
-        {/* The KhetSe Way */}
+        {/* The KhetConnect Way */}
         <div className="relative mt-8 rounded-3xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50/50 to-teal-50/30 p-6 sm:p-10 shadow-xl shadow-emerald-600/10">
           <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-emerald-600 px-5 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-md">
-            The KhetSe Way
+            The KhetConnect Way
           </div>
           
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 mt-4">

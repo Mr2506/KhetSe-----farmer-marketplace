@@ -72,7 +72,7 @@ export default function LocationPicker({ onLocationSelect }: { onLocationSelect:
     try {
       setIsLoading(true); 
 
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/map/search?q=${encodeURIComponent(searchQuery)}`;
       
       const res = await fetch(url, {

@@ -26,7 +26,7 @@ export default function CartPage() {
   const COST_PER_KM = 8; // ₹8 per kilometer for delivery
 
   useEffect(() => {
-    const savedCart = localStorage.getItem("khetse_cart");
+    const savedCart = localStorage.getItem("KhetConnect_cart");
     if (savedCart) {
       setCartItems(JSON.parse(savedCart));
     }
@@ -34,7 +34,7 @@ export default function CartPage() {
 
     // Fetch the buyer's saved location for delivery math
     const fetchLogisticsData = async () => {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) return;
 
       setIsCalculatingLocation(true);
@@ -78,7 +78,7 @@ export default function CartPage() {
   const calculateDeliveryRoute = async (buyerCoords: { lat: number; lng: number }) => {
     try {
       setIsCalculatingLocation(true);
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       
       const uniqueFarmers = Array.from(new Set(cartItems.map(item => item.farmerName)));
       
@@ -140,7 +140,7 @@ export default function CartPage() {
   
   const saveCart = (newCart: any[]) => {
     setCartItems(newCart);
-    localStorage.setItem("khetse_cart", JSON.stringify(newCart));
+    localStorage.setItem("KhetConnect_cart", JSON.stringify(newCart));
     window.dispatchEvent(new Event('cartUpdated'));
   };
 
@@ -162,7 +162,7 @@ export default function CartPage() {
   };
 
   const placeOrder = async () => {
-    const token = localStorage.getItem("khetse_token");
+    const token = localStorage.getItem("KhetConnect_token");
     if (!token) {
       toast.error("Please log in to place an order.");
       router.push("/login");
@@ -199,7 +199,7 @@ export default function CartPage() {
         throw new Error(data.message || "Failed to place order");
       }
 
-      localStorage.removeItem("khetse_cart");
+      localStorage.removeItem("KhetConnect_cart");
       window.dispatchEvent(new Event('cartUpdated'));
       toast.success("Order placed successfully!");
       router.push("/buyer/orders");

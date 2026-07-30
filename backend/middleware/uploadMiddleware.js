@@ -13,7 +13,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'khetse_produce', // It will create this folder in your Cloudinary account!
+    folder: 'KhetConnect_produce', // It will create this folder in your Cloudinary account!
     allowedFormats: ['jpeg', 'png', 'jpg'],
   },
 });

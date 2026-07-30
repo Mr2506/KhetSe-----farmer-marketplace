@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "KhetSe — Farmer to Consumer Marketplace",
+  title: "KhetConnect — Farmer to Consumer Marketplace",
   description: "Direct marketplace connecting farmers and buyers across Gujarat.",
 };
 

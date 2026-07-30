@@ -16,7 +16,7 @@ export default function FarmerOrdersPage() {
     if (showLoadingScreen) setLoading(true);
     
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) {
         setError("Please log in to view your orders.");
         if (showLoadingScreen) setLoading(false);

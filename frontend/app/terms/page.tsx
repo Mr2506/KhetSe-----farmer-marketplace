@@ -16,7 +16,7 @@ export default function TermsOfService() {
             <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-600 text-white">
               <Leaf className="h-4 w-4" />
             </div>
-            <span className="font-bold tracking-tight text-zinc-900">KhetSe</span>
+            <span className="font-bold tracking-tight text-zinc-900">KhetConnect</span>
           </div>
         </div>
 
@@ -28,14 +28,14 @@ export default function TermsOfService() {
           <div className="space-y-6 text-zinc-600 leading-relaxed text-sm sm:text-base">
             <p>Last updated: July 2026</p>
 
-            <h2 className="text-xl font-bold text-zinc-900 mt-8 mb-4">1. Welcome to KhetSe</h2>
+            <h2 className="text-xl font-bold text-zinc-900 mt-8 mb-4">1. Welcome to KhetConnect</h2>
             <p>
-              By accessing or using the KhetSe platform, you agree to be bound by these Terms of Service. KhetSe is a direct farm-to-consumer marketplace designed to connect local farmers in Gujarat with buyers.
+              By accessing or using the KhetConnect platform, you agree to be bound by these Terms of Service. KhetConnect is a direct farm-to-consumer marketplace designed to connect local farmers in Gujarat with buyers.
             </p>
 
             <h2 className="text-xl font-bold text-zinc-900 mt-8 mb-4">2. Platform Role</h2>
             <p>
-              KhetSe provides a technological platform for Buyers to discover and purchase agricultural produce directly from Farmers. KhetSe is not a party to the actual transaction between buyers and sellers, nor do we handle or store any physical produce.
+              KhetConnect provides a technological platform for Buyers to discover and purchase agricultural produce directly from Farmers. KhetConnect is not a party to the actual transaction between buyers and sellers, nor do we handle or store any physical produce.
             </p>
 
             <h2 className="text-xl font-bold text-zinc-900 mt-8 mb-4">3. User Responsibilities</h2>
@@ -46,7 +46,7 @@ export default function TermsOfService() {
 
             <h2 className="text-xl font-bold text-zinc-900 mt-8 mb-4">4. Payments</h2>
             <p>
-              Currently, all payments are handled directly between the Buyer and the Farmer upon delivery or pickup. KhetSe does not charge commission fees on transactions to ensure maximum profit for farmers and savings for buyers.
+              Currently, all payments are handled directly between the Buyer and the Farmer upon delivery or pickup. KhetConnect does not charge commission fees on transactions to ensure maximum profit for farmers and savings for buyers.
             </p>
 
             <h2 className="text-xl font-bold text-zinc-900 mt-8 mb-4">5. Account Registration</h2>

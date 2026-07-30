@@ -51,7 +51,7 @@ const searchLocation = async (req, res) => {
       },
       headers: {
         // NEW: Adding an email tells Nominatim you are a legit developer, stopping the random blocks!
-        'User-Agent': 'KhetSe-Agricultural-Marketplace/1.0 (contact: student@daiict.ac.in)',
+        'User-Agent': 'KhetConnect-Agricultural-Marketplace/1.0 (contact: student@daiict.ac.in)',
         'Accept-Language': 'en-US,en;q=0.9',
         'Referer': 'http://localhost:3000'
       }

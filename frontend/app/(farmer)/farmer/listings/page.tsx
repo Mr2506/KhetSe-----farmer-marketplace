@@ -11,7 +11,7 @@ export default function FarmerListingsPage() {
 
   const fetchMyListings = async () => {
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) return;
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/produce/mylistings`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -97,7 +97,7 @@ export default function FarmerListingsPage() {
           </div>
           <h3 className="text-lg font-bold text-zinc-900">No listings yet</h3>
           <p className="mt-2 text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
-            Start selling your harvest on KhetSe. Create your first crop listing and reach buyers near you.
+            Start selling your harvest on KhetConnect. Create your first crop listing and reach buyers near you.
           </p>
           <Link
             href="/farmer/listings/new"

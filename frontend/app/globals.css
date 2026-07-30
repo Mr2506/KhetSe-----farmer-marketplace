@@ -50,7 +50,7 @@
 }
 
 :root {
-  /* KhetSe Design System */
+  /* KhetConnect Design System */
   --ks-green:        #2E7D32;
   --ks-green-dark:   #1B5E20;
   --ks-green-light:  #F0FAF0;
@@ -165,7 +165,7 @@
     @apply opacity-100 visible scale-100 translate-y-0 pointer-events-auto;
   }
 
-  /* KhetSe hero grain texture — CSS noise overlay, no image needed */
+  /* KhetConnect hero grain texture — CSS noise overlay, no image needed */
   .ks-grain::after {
     content: '';
     position: absolute;

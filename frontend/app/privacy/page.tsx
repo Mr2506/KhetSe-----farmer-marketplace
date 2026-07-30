@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
             <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-600 text-white">
               <Leaf className="h-4 w-4" />
             </div>
-            <span className="font-bold tracking-tight text-zinc-900">KhetSe</span>
+            <span className="font-bold tracking-tight text-zinc-900">KhetConnect</span>
           </div>
         </div>
 
@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
 
             <h2 className="text-xl font-bold text-zinc-900 mt-8 mb-4">1. Information We Collect</h2>
             <p>
-              When you use KhetSe, we collect the minimum amount of information necessary to facilitate direct farm transactions:
+              When you use KhetConnect, we collect the minimum amount of information necessary to facilitate direct farm transactions:
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong>Account Data:</strong> Your phone number, first name, last name, and role (Buyer or Farmer).</li>

@@ -117,10 +117,10 @@ export default function FarmerSignup() {
       }
 
       // 3. Save Backend Token and Redirect!
-      localStorage.setItem("khetse_token", data.token);
-      localStorage.setItem("khetse_role", data.role);
+      localStorage.setItem("KhetConnect_token", data.token);
+      localStorage.setItem("KhetConnect_role", data.role);
       
-      setMessage({ text: "Account created! Welcome to KhetSe.", type: "success" });
+      setMessage({ text: "Account created! Welcome to KhetConnect.", type: "success" });
       
       setTimeout(() => {
         router.push("/farmer");
@@ -140,7 +140,7 @@ export default function FarmerSignup() {
           <div className="bg-[#2D8A4E] text-white p-2 rounded-lg mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">KhetSe</h1>
+          <h1 className="text-2xl font-bold text-gray-900">KhetConnect</h1>
         </div>
 
         {message && (

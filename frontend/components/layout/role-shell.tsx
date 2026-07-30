@@ -69,7 +69,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
   // ADDED THIS: Fetch the real profile on load!
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) return;
 
       try {
@@ -95,7 +95,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
   useEffect(() => {
     const readCart = () => {
       try {
-        const saved = localStorage.getItem("khetse_cart");
+        const saved = localStorage.getItem("KhetConnect_cart");
         if (saved) {
           const items = JSON.parse(saved);
           setCartCount(Array.isArray(items) ? items.length : 0);
@@ -139,8 +139,8 @@ export function RoleShell({ role, children }: RoleShellProps) {
     } catch (error) {
       console.error("Firebase signout error", error);
     }
-    localStorage.removeItem("khetse_token");
-    localStorage.removeItem("khetse_role");
+    localStorage.removeItem("KhetConnect_token");
+    localStorage.removeItem("KhetConnect_role");
     router.push("/login");
   };
 
@@ -172,7 +172,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
               </div>
               <div>
                 <p className="text-[17px] font-bold tracking-tight text-[#1A1A1A] group-hover:text-[#2E7D32] transition-colors duration-150">
-                  KhetSe
+                  KhetConnect
                 </p>
                 <span className="inline-flex items-center gap-1 rounded-full bg-[#F0FAF0] px-2 py-0.5 text-[11px] font-semibold text-[#2E7D32] border border-[#2E7D32]/15">
                   <Sparkles className="h-2.5 w-2.5" />
@@ -234,7 +234,7 @@ export function RoleShell({ role, children }: RoleShellProps) {
               <Leaf className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-bold tracking-tight text-[#1A1A1A]">KhetSe</p>
+              <p className="text-sm font-bold tracking-tight text-[#1A1A1A]">KhetConnect</p>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[#2E7D32]">
                 {ROLE_LABELS[role]}
               </p>

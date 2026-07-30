@@ -7,7 +7,7 @@ export function BuyerBanner() {
     <div
       className="ks-grain relative overflow-hidden rounded-2xl bg-[#1B3A2A] shadow-lg shadow-[#1B3A2A]/20"
       role="banner"
-      aria-label="KhetSe farm-direct marketplace introduction"
+      aria-label="KhetConnect farm-direct marketplace introduction"
     >
 
       {/* Soft radial glow — left */}

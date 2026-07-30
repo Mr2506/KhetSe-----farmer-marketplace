@@ -32,7 +32,7 @@ export function AddToCartPanel({
       return;
     }
 
-    const existingCartStr = localStorage.getItem("khetse_cart");
+    const existingCartStr = localStorage.getItem("KhetConnect_cart");
     let cart = existingCartStr ? JSON.parse(existingCartStr) : [];
 
     const existingItemIndex = cart.findIndex((item: any) => item.produceId === listingId);
@@ -60,7 +60,7 @@ export function AddToCartPanel({
       });
     }
 
-    localStorage.setItem("khetse_cart", JSON.stringify(cart));
+    localStorage.setItem("KhetConnect_cart", JSON.stringify(cart));
 
     // Update the sidebar count if needed
     window.dispatchEvent(new Event('cartUpdated'));

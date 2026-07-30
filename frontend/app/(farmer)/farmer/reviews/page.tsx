@@ -17,7 +17,7 @@ export default function FarmerReviewsPage() {
   useEffect(() => {
     const fetchMyCrops = async () => {
       try {
-        const token = localStorage.getItem("khetse_token");
+        const token = localStorage.getItem("KhetConnect_token");
         if (!token) return;
 
         // Fetching the farmer's own crops 

@@ -84,7 +84,7 @@ export function ListingForm({
     setLoading(true);
     try {
       if (form.photos.length === 0) throw new Error("Please upload at least one photo.");
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) throw new Error("You must be logged in to post a listing.");
 
      const url = initial ? `${process.env.NEXT_PUBLIC_API_URL}/api/produce/${initial.id}` : `${process.env.NEXT_PUBLIC_API_URL}/api/produce`;
@@ -135,7 +135,7 @@ export function ListingForm({
           {initial ? "Edit Listing" : "New Listing"}
         </h1>
         <p className="text-sm text-zinc-500 mt-1">
-          {initial ? "Update your crop details below." : "Fill in the details to publish your crop on KhetSe."}
+          {initial ? "Update your crop details below." : "Fill in the details to publish your crop on KhetConnect."}
         </p>
       </div>
 

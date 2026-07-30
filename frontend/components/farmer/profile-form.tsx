@@ -21,7 +21,7 @@ type Props = {
 };
 
 const VERIFICATION_CONFIG: Record<string, { icon: React.ReactNode; className: string; label: string; desc: string }> = {
-  Verified:  { icon: <ShieldCheck className="h-4 w-4" />, className: "bg-emerald-50 text-emerald-700 border-emerald-200", label: "Verified Farmer", desc: "Your account is approved to sell on KhetSe." },
+  Verified:  { icon: <ShieldCheck className="h-4 w-4" />, className: "bg-emerald-50 text-emerald-700 border-emerald-200", label: "Verified Farmer", desc: "Your account is approved to sell on KhetConnect." },
   Rejected:  { icon: <ShieldAlert className="h-4 w-4" />, className: "bg-red-50 text-red-700 border-red-200",             label: "Verification Rejected", desc: "Please contact support for assistance." },
   Pending:   { icon: <ShieldQuestion className="h-4 w-4" />, className: "bg-amber-50 text-amber-700 border-amber-200",   label: "Verification Pending", desc: "Our team is reviewing your documents." },
 };
@@ -35,7 +35,7 @@ export function FarmerProfileForm({ defaultValues }: Props) {
     setLoading(true);
     
     try {
-      const token = localStorage.getItem("khetse_token");
+      const token = localStorage.getItem("KhetConnect_token");
       if (!token) throw new Error("Not authenticated");
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {

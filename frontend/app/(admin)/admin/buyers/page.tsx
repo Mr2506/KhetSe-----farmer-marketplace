@@ -12,7 +12,7 @@ export default function AdminBuyersPage() {
   useEffect(() => {
     const fetchBuyers = async () => {
       try {
-        const token = localStorage.getItem("khetse_token");
+        const token = localStorage.getItem("KhetConnect_token");
         if (!token) return;
 
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/buyers`, {

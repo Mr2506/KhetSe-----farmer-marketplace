@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:3000", 
-    "https://khetse-farmer-marketplace-six.vercel.app"
+    "https://khetconnect-in.vercel.app"
   ],
   credentials: true, // This is crucial for authentication tokens/OTP to work!
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
@@ -24,7 +24,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:3000", 
-      "https://khetse-farmer-marketplace-six.vercel.app"
+      "https://khetconnect-in.vercel.app"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "OPTIONS"]
